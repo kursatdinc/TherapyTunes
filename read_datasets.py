@@ -16,3 +16,5 @@ songs_df = songs_df.rename(columns={"name": "song"})
 merged_df = pd.merge(lyrics_df, songs_df, how="inner", on="song")
 merged_df.shape
 # (21015, 24)
+
+merged_df.to_csv("./datasets/song_lyric.csv", index=False)
