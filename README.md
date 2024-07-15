@@ -1,1 +1,1 @@
-# ![TherapyTunes logo](https://ibb.co/L6zyVRb) TherapyTunes Project
+# ![TherapyTunes logo](https://github.com/kursatdinc/TherapyTunes/blob/main/images/theraphytunes_logo.jpeg) TherapyTunes Project
