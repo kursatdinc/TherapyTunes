@@ -22,6 +22,9 @@ songs_df.head(10)
 songs_df = songs_df.rename(columns={"name": "song"})
 merged_df = pd.merge(lyrics_df, songs_df, how="inner", on="song")
 merged_df.shape #(21015, 24)
+merged_df = merged_df.drop_duplicates(subset=["track_id"], keep="first")
+merged_df.reset_index()
+
 merged_df.to_csv("./datasets/song_lyric.csv", index=False)
 
 song_lyric_df = pd.read_csv("./datasets/song_lyric.csv")

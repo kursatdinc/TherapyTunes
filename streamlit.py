@@ -3,7 +3,7 @@ from st_clickable_images import clickable_images
 
 questions = [
     {
-        "question": "What is the capital of France?",
+        "question": "TARAFINI SEÇ",
         "choices": ["Paris", "London", "Berlin", "Rome"],
         "image_urls": ["https://images.unsplash.com/photo-1499856871958-5b9627545d1a?w=700",
                        "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=700",
