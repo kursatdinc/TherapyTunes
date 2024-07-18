@@ -1,6 +1,13 @@
 import streamlit as st
 from st_clickable_images import clickable_images
 
+def load_css():
+    with open('.streamlit/style.css') as f:
+        st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
+
+
+load_css()
+
 questions = [
         {
         "type": "slider",
@@ -30,6 +37,23 @@ questions = [
         "image_urls": ["https://icon2.cleanpng.com/20180319/opq/kisspng-computer-icons-clip-art-check-yes-ok-icon-5ab061dfcd38e3.7297168415215088318406.jpg",
                        "https://banner2.cleanpng.com/20180424/wzw/kisspng-no-symbol-sign-clip-art-prohibited-signs-5adf452cc063a7.6278734415245816767881.jpg"]
     },
+    {
+        "type": "image",
+        "question": "Do you play any instrument?",
+        "choices": ["Yes", "No"],
+        "image_urls": ["https://icon2.cleanpng.com/20180319/opq/kisspng-computer-icons-clip-art-check-yes-ok-icon-5ab061dfcd38e3.7297168415215088318406.jpg",
+                       "https://banner2.cleanpng.com/20180424/wzw/kisspng-no-symbol-sign-clip-art-prohibited-signs-5adf452cc063a7.6278734415245816767881.jpg"]
+    },
+    {
+        "type": "image",
+        "question": "Whats your favorite music genre?",
+        "choices": ['Latin', 'Rock', 'EDM', 'Jazz', 'R&B', 'K-Pop', 'Country',
+                    'Hip-Hop', 'Pop', 'Classical', 'Metal', 'Lofi', 'Folk', 'Gospel'],
+        "image_urls": ["https://ibb.co/jH8GR5m", "https://ibb.co/jH8GR5m", "https://ibb.co/jH8GR5m", "https://ibb.co/jH8GR5m",
+                       "https://ibb.co/jH8GR5m", "https://ibb.co/jH8GR5m", "https://ibb.co/jH8GR5m", "https://ibb.co/jH8GR5m",
+                       "https://ibb.co/jH8GR5m", "https://ibb.co/jH8GR5m", "https://ibb.co/jH8GR5m", "https://ibb.co/jH8GR5m",
+                       "https://ibb.co/jH8GR5m", "https://ibb.co/jH8GR5m"]
+    },
 ]
 
 def get_question(index):
@@ -53,7 +77,7 @@ initialize_session_state()
 quiz_data = st.session_state.quiz_data
 
 if quiz_data:
-    st.markdown(f"**Question {st.session_state.question_index + 1}: {quiz_data['question']}**")
+    st.markdown(f"**{quiz_data["question"]}**")
 
     if quiz_data["type"] == "image":
         clicked = clickable_images(

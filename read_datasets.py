@@ -178,3 +178,5 @@ mental_final_df.head(10)
 spotify_final_df = pd.read_csv("./datasets/spotify_final.csv")
 spotify_final_df.head(10)
 ###########
+
+mental_final_df["fav_genre"].unique()

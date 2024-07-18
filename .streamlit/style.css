@@ -1,0 +1,9 @@
+body {
+    background-color: #E8E8E8;
+    background-image: url("https://i.ibb.co/S58Cvth/Gradient-background.jpg");
+    background-size: cover;
+}
+
+.stApp {
+    background-color: rgba(255, 255, 255, 0.1);
+}
