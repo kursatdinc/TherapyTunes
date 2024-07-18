@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 sign_list = ["aries", "taurus", "gemini", "cancer", "leo", "virgo","libra",
              "scorpio", "sagittarius", "capricorn", "aquarius", "pisces"]
 
-def get_star_ratings(sign, date='today'):
+def get_star_ratings(sign, date="today"):
 
     url = f"https://www.horoscope.com/star-ratings/{date}/{sign}"
     

@@ -19,8 +19,8 @@ def polar_plot(df, track_id):
 
     fig, ax = plt.subplots(figsize=(6, 6), subplot_kw=dict(polar=True))
 
-    ax.fill(angles, stats, color='grey', alpha=0.25)
-    ax.plot(angles, stats, 'o-', color='grey', linewidth=2)
+    ax.fill(angles, stats, color="grey", alpha=0.25)
+    ax.plot(angles, stats, "o-", color="grey", linewidth=2)
 
     ax.set_yticklabels([])
     ax.set_xticks(angles[:-1])
