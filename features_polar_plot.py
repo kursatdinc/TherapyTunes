@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-song_lyric_df = pd.read_csv("./datasets/song_lyric.csv")
+song_lyric_df = pd.read_csv("./datasets/spotify_data.csv")
 
 def polar_plot(df, track_id):
     labels = ["energy", "danceability", "acousticness", "valence",
@@ -28,4 +28,4 @@ def polar_plot(df, track_id):
 
     plt.show()
 
-polar_plot(song_lyric_df, "TRFZRQD128F428B23F")
+polar_plot(song_lyric_df, "53QF56cjZA9RTuuMZDrSA6")

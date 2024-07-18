@@ -10,6 +10,6 @@ def spotify_player(track_id):
 
 st.title("Spotify Player Örneği")
 
-track_id = "11dFghVXANMlKmJXsNCbNl"
+track_id = "53QF56cjZA9RTuuMZDrSA6"
     
 spotify_player(track_id)
