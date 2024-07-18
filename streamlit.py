@@ -1,66 +1,23 @@
 import streamlit as st
+from st_clickable_images import clickable_images
 
 questions = [
     {
         "question": "What is the capital of France?",
         "choices": ["Paris", "London", "Berlin", "Rome"],
-        "correct_answer": "Paris",
-        "explanation": "Paris is the capital and most populous city of France."
-    },
-    {
-        "question": "What is 2 + 2?",
-        "choices": ["3", "4", "5", "6"],
-        "correct_answer": "4",
-        "explanation": "2 + 2 equals 4."
+        "image_urls": ["https://images.unsplash.com/photo-1499856871958-5b9627545d1a?w=700",
+                       "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=700",
+                       "https://images.unsplash.com/photo-1560969184-10fe8719e047?w=700",
+                       "https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=700"]
     },
     {
         "question": "Which planet is known as the Red Planet?",
         "choices": ["Earth", "Mars", "Jupiter", "Saturn"],
-        "correct_answer": "Mars",
-        "explanation": "Mars is often called the 'Red Planet' because of its reddish appearance."
+        "image_urls": ["https://images.unsplash.com/photo-1614730321146-b6fa6a46bcb4?w=700",
+                       "https://images.unsplash.com/photo-1614728263952-84ea256f9679?w=700",
+                       "https://images.unsplash.com/photo-1630839437035-dac17da580d0?w=700",
+                       "https://images.unsplash.com/photo-1614314107768-6018061b5b72?w=700"]
     },
-    {
-        "question": "What is the chemical symbol for water?",
-        "choices": ["H2O", "O2", "CO2", "HO2"],
-        "correct_answer": "H2O",
-        "explanation": "H2O is the chemical formula for water, consisting of two hydrogen atoms and one oxygen atom."
-    },
-    {
-        "question": "Who wrote 'Romeo and Juliet'?",
-        "choices": ["William Shakespeare", "Charles Dickens", "Mark Twain", "Jane Austen"],
-        "correct_answer": "William Shakespeare",
-        "explanation": "William Shakespeare is the author of the famous play 'Romeo and Juliet'."
-    },
-    {
-        "question": "What is the largest mammal in the world?",
-        "choices": ["Elephant", "Blue Whale", "Giraffe", "Great White Shark"],
-        "correct_answer": "Blue Whale",
-        "explanation": "The Blue Whale is the largest mammal in the world, reaching lengths of up to 100 feet."
-    },
-    {
-        "question": "What is the boiling point of water at sea level?",
-        "choices": ["90°C", "100°C", "110°C", "120°C"],
-        "correct_answer": "100°C",
-        "explanation": "At sea level, water boils at 100 degrees Celsius (212 degrees Fahrenheit)."
-    },
-    {
-        "question": "Which element has the atomic number 1?",
-        "choices": ["Hydrogen", "Helium", "Lithium", "Carbon"],
-        "correct_answer": "Hydrogen",
-        "explanation": "Hydrogen is the first element on the periodic table with the atomic number 1."
-    },
-    {
-        "question": "Who painted the Mona Lisa?",
-        "choices": ["Leonardo da Vinci", "Vincent van Gogh", "Pablo Picasso", "Claude Monet"],
-        "correct_answer": "Leonardo da Vinci",
-        "explanation": "The Mona Lisa was painted by the Italian artist Leonardo da Vinci."
-    },
-    {
-        "question": "What is the hardest natural substance on Earth?",
-        "choices": ["Gold", "Iron", "Diamond", "Silver"],
-        "correct_answer": "Diamond",
-        "explanation": "Diamond is the hardest natural substance known on Earth."
-    }
 ]
 
 def get_question(index):
@@ -70,32 +27,46 @@ def get_question(index):
         return None
 
 def initialize_session_state():
-    session_state = st.session_state
-    session_state.form_count = 0
-    session_state.quiz_data = get_question(session_state.form_count)
+    if "question_index" not in st.session_state:
+        st.session_state.question_index = 0
+    if "quiz_data" not in st.session_state:
+        st.session_state.quiz_data = get_question(st.session_state.question_index)
+    if "user_answers" not in st.session_state:
+        st.session_state.user_answers = []
 
-# Streamlit uygulaması
-st.title('Initial Quiz')
 
-if 'form_count' not in st.session_state:
-    initialize_session_state()
+st.title("Quiz with Clickable Images")
+
+initialize_session_state()
 
 quiz_data = st.session_state.quiz_data
 
 if quiz_data:
-    st.markdown(f"Question: {quiz_data['question']}")
-    
-    form = st.form(key=f"quiz_form_{st.session_state.form_count}")
-    user_choice = form.radio("Choose an answer:", quiz_data['choices'])
-    
-    if form.form_submit_button("Submit your answer"):
-        
-        st.session_state.form_count += 1
-        st.session_state.quiz_data = get_question(st.session_state.form_count)
+    st.markdown(f"**Question {st.session_state.question_index + 1}: {quiz_data["question"]}**")
+
+    clicked = clickable_images(
+        quiz_data["image_urls"],
+        titles=[choice for choice in quiz_data["choices"]],
+        div_style={"display": "flex", "justify-content": "center", "flex-wrap": "wrap"},
+        img_style={"margin": "5px", "height": "200px"},
+    )
+
+    if clicked > -1:
+        selected_answer = quiz_data["choices"][clicked]
+        st.session_state.user_answers.append(selected_answer)
+
+        # Sonraki soruya geç
+        st.session_state.question_index += 1
+        st.session_state.quiz_data = get_question(st.session_state.question_index)
         
         if st.session_state.quiz_data is None:
-            st.markdown("No more questions available.")
+            st.markdown("Quiz tamamlandı. İşte cevaplarınız:")
+            for i, answer in enumerate(st.session_state.user_answers):
+                st.write(f"Soru {i+1}: {answer}")
         else:
-            st.experimental_rerun()
+            st.rerun()
+
 else:
-    st.markdown("No more questions available.")
+    st.markdown("Quiz tamamlandı. İşte cevaplarınız:")
+    for i, answer in enumerate(st.session_state.user_answers):
+        st.write(f"Soru {i+1}: {answer}")
