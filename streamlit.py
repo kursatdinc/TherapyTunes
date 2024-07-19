@@ -12,13 +12,15 @@ questions = [
         "type": "slider",
         "question": "Enter your age.",
         "min_value": 1,
-        "max_value": 100
+        "max_value": 100,
+        "step":1
     },
     {
         "type": "slider",
         "question":"How many hours a day do you listen to music?",
-        "min_value": 0,
-        "max_value": 24
+        "min_value": 0.0,
+        "max_value": 24.0,
+        "step": 0.25
     },
     {
         "type": "image",
@@ -151,7 +153,7 @@ quiz_data = st.session_state.quiz_data
 if quiz_data:
     if quiz_data["type"] == "slider":
         st.markdown(f"**{quiz_data['question']}**")
-        slider_value = st.slider("Your answer", min_value=quiz_data["min_value"], max_value=quiz_data["max_value"])
+        slider_value = st.slider("Your answer", min_value=quiz_data["min_value"], max_value=quiz_data["max_value"], step=quiz_data["step"])
         
         if st.button("Submit"):
             st.session_state.user_answers.append({quiz_data['question']: slider_value})
