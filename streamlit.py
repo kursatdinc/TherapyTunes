@@ -44,6 +44,13 @@ questions = [
         "image_urls": ["https://www.onlinelogomaker.com/blog/wp-content/uploads/2017/06/music-logo-design.jpg"] * 14
     },
     {
+        "type": "image",
+        "question": "Are you open to listening to new music?",
+        "choices": ["Yes", "No"],
+        "image_urls": ["https://icon2.cleanpng.com/20180319/opq/kisspng-computer-icons-clip-art-check-yes-ok-icon-5ab061dfcd38e3.7297168415215088318406.jpg",
+                       "https://banner2.cleanpng.com/20180424/wzw/kisspng-no-symbol-sign-clip-art-prohibited-signs-5adf452cc063a7.6278734415245816767881.jpg"]
+    },
+    {
         "type": "multi_question",
         "main_question": "Select the frequency of listening to music genres?",
         "sub_questions": [
@@ -103,6 +110,21 @@ questions = [
                 "question": "Rock",
                 "options": ["Never", "Rarely", "Sometimes", "Often"]
             }]
+    },
+    {
+        "type": "image",
+        "question": "Is listening to music good for mental health?",
+        "choices": ["Improve", "No Effect", "Worsen"],
+        "image_urls": ["https://icon2.cleanpng.com/20180319/opq/kisspng-computer-icons-clip-art-check-yes-ok-icon-5ab061dfcd38e3.7297168415215088318406.jpg",
+                       "https://banner2.cleanpng.com/20180424/wzw/kisspng-no-symbol-sign-clip-art-prohibited-signs-5adf452cc063a7.6278734415245816767881.jpg",
+                       "https://banner2.cleanpng.com/20180424/wzw/kisspng-no-symbol-sign-clip-art-prohibited-signs-5adf452cc063a7.6278734415245816767881.jpg"]
+    },
+    {
+        "type": "image",
+        "question": "What's your zodiac sign?",
+        "choices": ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra",
+                    "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"],
+        "image_urls": ["https://miro.medium.com/v2/resize:fit:800/0*2llmBOj3G8yJ4Jil.jpg"] * 12
     }
 ]
 

@@ -73,6 +73,8 @@ replaced_selection_columns = ["frequency_classical", "frequency_country", "frequ
 for col in replaced_selection_columns:
     mental_survey_df[col] = mental_survey_df[col].replace({"Very frequently":"Often"})
 
+mental_survey_df["music_effects"] = mental_survey_df["music_effects"].replace({"No effect":"No Effect"})
+
 mental_survey_df.to_csv("./datasets/mental_final.csv", index=False)
 ###########
 
