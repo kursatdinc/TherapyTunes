@@ -4,26 +4,22 @@ import numpy as np
 pd.set_option("display.max_columns", None)
 
 ###########
+# READ DATA - MENTAL SURVEY
+###########
 mental_survey_df = pd.read_csv("./datasets/mental_survey_results.csv")
-mental_survey_df.head(10)
+###########
 
+
+###########
+# DROP COLUMNS
+###########
 mental_survey_df.drop(columns=["Timestamp", "Composer", "Foreign languages", "Frequency [Rap]", "Frequency [Video game music]", "OCD", "Permissions"], inplace=True)
+###########
 
 
-replaced_streaming = {"Pandora":"Other",
-                      "I do not use a streaming service.":"Other",
-                      "Other streaming service":"Other"}
-mental_survey_df["Primary streaming service"] = mental_survey_df["Primary streaming service"].replace(replaced_streaming)
-
-
-mental_survey_df["Age"] = mental_survey_df["Age"].fillna(mental_survey_df["Age"].median())
-mental_survey_df["BPM"] = mental_survey_df["BPM"].fillna(mental_survey_df["BPM"].median())
-mental_survey_df["Primary streaming service"] = mental_survey_df["Primary streaming service"].fillna(mental_survey_df["Primary streaming service"].mode().iloc[0])
-mental_survey_df["While working"] = mental_survey_df["While working"].fillna(mental_survey_df["While working"].mode().iloc[0])
-mental_survey_df["Instrumentalist"] = mental_survey_df["Instrumentalist"].fillna(mental_survey_df["Instrumentalist"].mode().iloc[0])
-mental_survey_df["Music effects"] = mental_survey_df["Music effects"].fillna(mental_survey_df["Music effects"].mode().iloc[0])
-
-
+###########
+# CHANGE COLUMN NAMES
+###########
 changed_column_names = {"Age":"age",
                         "Primary streaming service":"streaming_service",
                         "Hours per day":"hours_per_day",
@@ -51,39 +47,79 @@ changed_column_names = {"Age":"age",
                         "Insomnia":"insomnia", 
                         "Music effects":"music_effects"}
 mental_survey_df = mental_survey_df.rename(columns=changed_column_names)
+###########
 
 
-video_game_indices = mental_survey_df[mental_survey_df["fav_genre"] == "Video game music"].index
-shuffled_indices = np.random.permutation(video_game_indices)
-
-mental_survey_df.loc[shuffled_indices[:22], "fav_genre"] = "EDM"
-mental_survey_df.loc[shuffled_indices[22:], "fav_genre"] = "Lofi"
+###########
+# CHANGE VARIABLE NAMES
+###########
+replaced_streaming = {"Pandora":"Other",
+                      "I do not use a streaming service.":"Other",
+                      "Other streaming service":"Other"}
+mental_survey_df["Primary streaming service"] = mental_survey_df["Primary streaming service"].replace(replaced_streaming)
 
 replaced_fav_genres = {"K pop":"K-Pop",
                        "Hip hop":"Hip-Hop",
                        "Rap":"Hip-Hop"}
-
 mental_survey_df["fav_genre"] = mental_survey_df["fav_genre"].replace(replaced_fav_genres)
 
 replaced_selection_columns = ["frequency_classical", "frequency_country", "frequency_edm",
                               "frequency_folk", "frequency_gospel", "frequency_hiphop",
                               "frequency_jazz", "frequency_kpop", "frequency_latin", "frequency_lofi",
                               "frequency_metal", "frequency_pop", "frequency_rnb", "frequency_rock"]
-
 for col in replaced_selection_columns:
     mental_survey_df[col] = mental_survey_df[col].replace({"Very frequently":"Often"})
 
 mental_survey_df["music_effects"] = mental_survey_df["music_effects"].replace({"No effect":"No Effect"})
-
-mental_survey_df.to_csv("./datasets/mental_final.csv", index=False)
 ###########
 
+
+###########
+# CHANGE RARE GENRES
+###########
+video_game_indices = mental_survey_df[mental_survey_df["fav_genre"] == "Video game music"].index
+shuffled_indices = np.random.permutation(video_game_indices)
+
+mental_survey_df.loc[shuffled_indices[:22], "fav_genre"] = "EDM"
+mental_survey_df.loc[shuffled_indices[22:], "fav_genre"] = "Lofi"
+###########
+
+
+###########
+# FILLING MISSING VALUES
+###########
+mental_survey_df["age"] = mental_survey_df["age"].fillna(mental_survey_df["age"].median())
+# mental_survey_df["tempo"] = mental_survey_df["tempo"].fillna(mental_survey_df["tempo"].median())
+mental_survey_df["streaming_service"] = mental_survey_df["streaming_service"].fillna(mental_survey_df["streaming_service"].mode().iloc[0])
+mental_survey_df["while_working"] = mental_survey_df["while_working"].fillna(mental_survey_df["while_working"].mode().iloc[0])
+mental_survey_df["instrumentalist"] = mental_survey_df["instrumentalist"].fillna(mental_survey_df["instrumentalist"].mode().iloc[0])
+mental_survey_df["music_effects"] = mental_survey_df["music_effects"].fillna(mental_survey_df["music_effects"].mode().iloc[0])
+###########
+
+
+###########
+# EXPORT DATA
+###########
+mental_survey_df.to_csv("./datasets/mental_final.csv", index=False)
+
+mental_final_df = pd.read_csv("./datasets/mental_final.csv")
+mental_final_df.head(10)
+###########
+
+
+
+
+
+###########
+# READ DATA - SPOTIFY
 ###########
 spotify_df = pd.read_csv("./datasets/spotify_data.csv", index=False)
-spotify_df.head(10)
+###########
 
-mental_survey_df["fav_genre"].value_counts()
 
+###########
+# GENRE MATCH
+###########
 deleted_genres = ["afrobeat",
                   "comedy",
                   "french",
@@ -98,7 +134,6 @@ deleted_genres = ["afrobeat",
                   "ska",
                   "swedish",
                   "songwriter"]
-
 spotify_df = spotify_df[~spotify_df["genre"].isin(deleted_genres)]
 
 replaced_genres = { "acoustic":"Classical",
@@ -169,21 +204,14 @@ replaced_genres = { "acoustic":"Classical",
                     "trance":"EDM",
                     "trip-hop":"EDM",
                     "dancehall":"EDM",}
-
 spotify_df["genre"] = spotify_df["genre"].replace({replaced_genres})
 
-spotify_df["genre"].value_counts()
 
-
+###########
+# EXPORT DATA
+###########
 spotify_df.to_csv("./datasets/spotify_final.csv")
-###########
 
-###########
-mental_final_df = pd.read_csv("./datasets/mental_final.csv")
-mental_final_df.head(10)
-###########
-
-###########
 spotify_final_df = pd.read_csv("./datasets/spotify_final.csv")
 spotify_final_df.head(10)
 ###########

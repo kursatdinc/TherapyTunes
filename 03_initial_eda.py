@@ -1,7 +1,6 @@
 import pandas as pd
 
 pd.set_option("display.max_columns", None)
-pd.set_option("display.max_rows", None)
 pd.set_option('display.float_format', lambda x: '%.3f' % x)
 
 ###########
@@ -37,15 +36,15 @@ mental_final_df.describe([0, 0.05, 0.50, 0.95, 0.99, 1]).T
 
 mental_final_df["anxiety"].value_counts()
 mental_final_df["anxiety"] = mental_final_df["anxiety"].replace({7.5:7})
-mental_final_df["anxiety"] = mental_final_df["anxiety"].astype(int)
+mental_final_df["anxiety"] = mental_final_df["anxiety"].astype(object)
 
 mental_final_df["depression"].value_counts()
 mental_final_df["depression"] = mental_final_df["depression"].replace({3.5:3})
-mental_final_df["depression"] = mental_final_df["depression"].astype(int)
+mental_final_df["depression"] = mental_final_df["depression"].astype(object)
 
 mental_final_df["insomnia"].value_counts()
 mental_final_df["insomnia"] = mental_final_df["insomnia"].replace({3.5:3})
-mental_final_df["insomnia"] = mental_final_df["insomnia"].astype(int)
+mental_final_df["insomnia"] = mental_final_df["insomnia"].astype(object)
 
 mental_final_df["age"] = mental_final_df["age"].astype(int)
 
@@ -110,4 +109,7 @@ mental_final_df["tempo"].sort_values(ascending=False)
 
 mental_final_df.info()
 
+
+###########################
 mental_final_df.to_csv("./datasets/mental_after_eda.csv", index=False)
+###########################
