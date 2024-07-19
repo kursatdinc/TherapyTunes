@@ -28,27 +28,16 @@ def check_df(dataframe, head=5):
 check_df(mental_final_df)
 
 # tempo kontrol edilecek.
-# age kontrol edilecek int olacak.
 # hours per day kontrol edilecek.
 # hepsinin outlier değerleri kontrol edilecek.
 
 mental_final_df.describe([0, 0.05, 0.50, 0.95, 0.99, 1]).T
 
-mental_final_df["anxiety"].value_counts()
-mental_final_df["anxiety"] = mental_final_df["anxiety"].replace({7.5:7})
-mental_final_df["anxiety"] = mental_final_df["anxiety"].astype(object)
-
-mental_final_df["depression"].value_counts()
-mental_final_df["depression"] = mental_final_df["depression"].replace({3.5:3})
-mental_final_df["depression"] = mental_final_df["depression"].astype(object)
-
-mental_final_df["insomnia"].value_counts()
-mental_final_df["insomnia"] = mental_final_df["insomnia"].replace({3.5:3})
-mental_final_df["insomnia"] = mental_final_df["insomnia"].astype(object)
-
-mental_final_df["age"] = mental_final_df["age"].astype(int)
-
 mental_final_df.info()
+
+mental_final_df["anxiety"] = mental_final_df["anxiety"].astype(object)
+mental_final_df["depression"] = mental_final_df["depression"].astype(object)
+mental_final_df["insomnia"] = mental_final_df["insomnia"].astype(object)
 
 
 def grab_col_names(dataframe, cat_th=10, car_th=20):

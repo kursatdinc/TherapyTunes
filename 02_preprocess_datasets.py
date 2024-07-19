@@ -13,7 +13,8 @@ mental_survey_df = pd.read_csv("./datasets/mental_survey_results.csv")
 ###########
 # DROP COLUMNS
 ###########
-mental_survey_df.drop(columns=["Timestamp", "Composer", "Foreign languages", "Frequency [Rap]", "Frequency [Video game music]", "OCD", "Permissions"], inplace=True)
+mental_survey_df.drop(columns=["Timestamp", "Composer", "Foreign languages", "Frequency [Rap]",
+                               "Frequency [Video game music]", "OCD", "Permissions"], inplace=True)
 ###########
 
 
@@ -56,7 +57,7 @@ mental_survey_df = mental_survey_df.rename(columns=changed_column_names)
 replaced_streaming = {"Pandora":"Other",
                       "I do not use a streaming service.":"Other",
                       "Other streaming service":"Other"}
-mental_survey_df["Primary streaming service"] = mental_survey_df["Primary streaming service"].replace(replaced_streaming)
+mental_survey_df["streaming_service"] = mental_survey_df["streaming_service"].replace(replaced_streaming)
 
 replaced_fav_genres = {"K pop":"K-Pop",
                        "Hip hop":"Hip-Hop",
@@ -89,7 +90,7 @@ mental_survey_df.loc[shuffled_indices[22:], "fav_genre"] = "Lofi"
 # FILLING MISSING VALUES
 ###########
 mental_survey_df["age"] = mental_survey_df["age"].fillna(mental_survey_df["age"].median())
-# mental_survey_df["tempo"] = mental_survey_df["tempo"].fillna(mental_survey_df["tempo"].median())
+mental_survey_df["tempo"] = mental_survey_df["tempo"].fillna(mental_survey_df.groupby("fav_genre")["age"].transform("median"))
 mental_survey_df["streaming_service"] = mental_survey_df["streaming_service"].fillna(mental_survey_df["streaming_service"].mode().iloc[0])
 mental_survey_df["while_working"] = mental_survey_df["while_working"].fillna(mental_survey_df["while_working"].mode().iloc[0])
 mental_survey_df["instrumentalist"] = mental_survey_df["instrumentalist"].fillna(mental_survey_df["instrumentalist"].mode().iloc[0])
@@ -98,12 +99,35 @@ mental_survey_df["music_effects"] = mental_survey_df["music_effects"].fillna(men
 
 
 ###########
+# CHANGE COLUMN TYPES
+###########
+mental_survey_df["anxiety"].value_counts()
+mental_survey_df["anxiety"] = mental_survey_df["anxiety"].replace({7.5:7})
+mental_survey_df["anxiety"] = mental_survey_df["anxiety"].astype(object)
+
+mental_survey_df["depression"].value_counts()
+mental_survey_df["depression"] = mental_survey_df["depression"].replace({3.5:3})
+mental_survey_df["depression"] = mental_survey_df["depression"].astype(object)
+
+mental_survey_df["insomnia"].value_counts()
+mental_survey_df["insomnia"] = mental_survey_df["insomnia"].replace({3.5:3})
+mental_survey_df["insomnia"] = mental_survey_df["insomnia"].astype(object)
+
+mental_survey_df["age"] = mental_survey_df["age"].astype(int)
+
+mental_survey_df.info()
+###########
+
+
+###########
 # EXPORT DATA
 ###########
+mental_survey_df.reset_index(drop=True, inplace=True)
+
 mental_survey_df.to_csv("./datasets/mental_final.csv", index=False)
 
-mental_final_df = pd.read_csv("./datasets/mental_final.csv")
-mental_final_df.head(10)
+mental_survey_df = pd.read_csv("./datasets/mental_final.csv")
+mental_survey_df.head(10)
 ###########
 
 
@@ -210,6 +234,8 @@ spotify_df["genre"] = spotify_df["genre"].replace({replaced_genres})
 ###########
 # EXPORT DATA
 ###########
+spotify_df.reset_index(drop=True, inplace=True)
+
 spotify_df.to_csv("./datasets/spotify_final.csv")
 
 spotify_final_df = pd.read_csv("./datasets/spotify_final.csv")
