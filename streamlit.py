@@ -5,15 +5,20 @@ def load_css():
     with open('.streamlit/style.css') as f:
         st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 
-
 load_css()
 
 questions = [
-        {
+    {
         "type": "slider",
         "question": "Enter your age.",
         "min_value": 1,
         "max_value": 100
+    },
+    {
+        "type": "slider",
+        "question":"How many hours a day do you listen to music?",
+        "min_value": 0,
+        "max_value": 24
     },
     {
         "type": "image",
@@ -25,12 +30,6 @@ questions = [
                        "https://www.edagroups.com/files/3214/7969/6498/other.png"]
     },
     {
-        "type": "slider",
-        "question": "How many hours a day do you listen to music?",
-        "min_value": 1,
-        "max_value": 24
-    },
-    {
         "type": "image",
         "question": "Do you listen to music while working?",
         "choices": ["Yes", "No"],
@@ -39,21 +38,72 @@ questions = [
     },
     {
         "type": "image",
-        "question": "Do you play any instrument?",
-        "choices": ["Yes", "No"],
-        "image_urls": ["https://icon2.cleanpng.com/20180319/opq/kisspng-computer-icons-clip-art-check-yes-ok-icon-5ab061dfcd38e3.7297168415215088318406.jpg",
-                       "https://banner2.cleanpng.com/20180424/wzw/kisspng-no-symbol-sign-clip-art-prohibited-signs-5adf452cc063a7.6278734415245816767881.jpg"]
+        "question": "What's your favorite music genre?",
+        "choices": ["Classical", "Country", "EDM", "Folk", "Gospel", "Hip-Hop", "Jazz",
+                    "K-Pop", "Latin", "Lofi", "Metal", "Pop", "R&B", "Rock"],
+        "image_urls": ["https://www.onlinelogomaker.com/blog/wp-content/uploads/2017/06/music-logo-design.jpg"] * 14
     },
     {
-        "type": "image",
-        "question": "Whats your favorite music genre?",
-        "choices": ['Latin', 'Rock', 'EDM', 'Jazz', 'R&B', 'K-Pop', 'Country',
-                    'Hip-Hop', 'Pop', 'Classical', 'Metal', 'Lofi', 'Folk', 'Gospel'],
-        "image_urls": ["https://ibb.co/jH8GR5m", "https://ibb.co/jH8GR5m", "https://ibb.co/jH8GR5m", "https://ibb.co/jH8GR5m",
-                       "https://ibb.co/jH8GR5m", "https://ibb.co/jH8GR5m", "https://ibb.co/jH8GR5m", "https://ibb.co/jH8GR5m",
-                       "https://ibb.co/jH8GR5m", "https://ibb.co/jH8GR5m", "https://ibb.co/jH8GR5m", "https://ibb.co/jH8GR5m",
-                       "https://ibb.co/jH8GR5m", "https://ibb.co/jH8GR5m"]
-    },
+        "type": "multi_question",
+        "main_question": "Select the frequency of listening to music genres?",
+        "sub_questions": [
+            {
+                "question": "Classical",
+                "options": ["Never", "Rarely", "Sometimes", "Often"]
+            },
+            {
+                "question": "Country",
+                "options": ["Never", "Rarely", "Sometimes", "Often"]
+            },
+            {
+                "question": "EDM",
+                "options": ["Never", "Rarely", "Sometimes", "Often"]
+            },
+            {
+                "question": "Folk",
+                "options": ["Never", "Rarely", "Sometimes", "Often"]
+            },
+            {
+                "question": "Gospel",
+                "options": ["Never", "Rarely", "Sometimes", "Often"]
+            },
+            {
+                "question": "Hip-Hop",
+                "options": ["Never", "Rarely", "Sometimes", "Often"]
+            },
+            {
+                "question": "Jazz",
+                "options": ["Never", "Rarely", "Sometimes", "Often"]
+            },
+            {
+                "question": "K-Pop",
+                "options": ["Never", "Rarely", "Sometimes", "Often"]
+            },
+            {
+                "question": "Latin",
+                "options": ["Never", "Rarely", "Sometimes", "Often"]
+            },
+            {
+                "question": "Lofi",
+                "options": ["Never", "Rarely", "Sometimes", "Often"]
+            },
+            {
+                "question": "Metal",
+                "options": ["Never", "Rarely", "Sometimes", "Often"]
+            },
+            {
+                "question": "Pop",
+                "options": ["Never", "Rarely", "Sometimes", "Often"]
+            },
+            {
+                "question": "R&B",
+                "options": ["Never", "Rarely", "Sometimes", "Often"]
+            },
+            {
+                "question": "Rock",
+                "options": ["Never", "Rarely", "Sometimes", "Often"]
+            }]
+    }
 ]
 
 def get_question(index):
@@ -70,16 +120,42 @@ def initialize_session_state():
     if "user_answers" not in st.session_state:
         st.session_state.user_answers = []
 
-st.title("Quiz with Clickable Images and Sliders")
+st.title("Music Habits Quiz")
 
 initialize_session_state()
 
 quiz_data = st.session_state.quiz_data
 
 if quiz_data:
-    st.markdown(f"**{quiz_data["question"]}**")
+    if quiz_data["type"] == "slider":
+        st.markdown(f"**{quiz_data['question']}**")
+        slider_value = st.slider("Your answer", min_value=quiz_data["min_value"], max_value=quiz_data["max_value"])
+        
+        if st.button("Submit"):
+            st.session_state.user_answers.append({quiz_data['question']: slider_value})
+            st.session_state.question_index += 1
+            st.session_state.quiz_data = get_question(st.session_state.question_index)
+            st.rerun()
 
-    if quiz_data["type"] == "image":
+    elif quiz_data["type"] == "multi_question":
+        st.markdown(f"**{quiz_data['main_question']}**")
+        sub_answers = {}
+        col1, col2, col3 = st.columns(3)
+        columns = [col1, col2, col3]
+        for i, sub_question in enumerate(quiz_data["sub_questions"]):
+            with columns[i % 3]:
+                st.markdown(f"**{sub_question['question']}**")
+                selected_option = st.radio("", sub_question["options"], key=f"radio_{i}")
+                sub_answers[sub_question["question"]] = selected_option
+        
+        if st.button("Submit Answers"):
+            st.session_state.user_answers.append({quiz_data['main_question']: sub_answers})
+            st.session_state.question_index += 1
+            st.session_state.quiz_data = get_question(st.session_state.question_index)
+            st.rerun()
+
+    elif quiz_data["type"] == "image":
+        st.markdown(f"**{quiz_data['question']}**")
         clicked = clickable_images(
             quiz_data["image_urls"],
             titles=[choice for choice in quiz_data["choices"]],
@@ -89,21 +165,19 @@ if quiz_data:
 
         if clicked > -1:
             selected_answer = quiz_data["choices"][clicked]
-            st.session_state.user_answers.append(selected_answer)
-            st.session_state.question_index += 1
-            st.session_state.quiz_data = get_question(st.session_state.question_index)
-            st.rerun()
-
-    elif quiz_data["type"] == "slider":
-        slider_value = st.slider("Your answer", min_value=quiz_data["min_value"], max_value=quiz_data["max_value"])
-        
-        if st.button("Submit"):
-            st.session_state.user_answers.append(slider_value)
+            st.session_state.user_answers.append({quiz_data['question']: selected_answer})
             st.session_state.question_index += 1
             st.session_state.quiz_data = get_question(st.session_state.question_index)
             st.rerun()
 
 else:
-    st.markdown("Quiz tamamlandı. İşte cevaplarınız:")
-    for i, answer in enumerate(st.session_state.user_answers):
-        st.write(f"Soru {i+1}: {answer}")
+    st.markdown("Quiz completed. Here are your answers:")
+    for answer in st.session_state.user_answers:
+        for question, response in answer.items():
+            st.write(f"**{question}**")
+            if isinstance(response, dict):
+                for sub_q, sub_r in response.items():
+                    st.write(f"  {sub_q}: {sub_r}")
+            else:
+                st.write(f"  {response}")
+        st.write("---")

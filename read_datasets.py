@@ -65,12 +65,19 @@ replaced_fav_genres = {"K pop":"K-Pop",
 
 mental_survey_df["fav_genre"] = mental_survey_df["fav_genre"].replace(replaced_fav_genres)
 
+replaced_selection_columns = ["frequency_classical", "frequency_country", "frequency_edm",
+                              "frequency_folk", "frequency_gospel", "frequency_hiphop",
+                              "frequency_jazz", "frequency_kpop", "frequency_latin", "frequency_lofi",
+                              "frequency_metal", "frequency_pop", "frequency_rnb", "frequency_rock"]
 
-mental_survey_df.to_csv("./datasets/mental_final.csv")
+for col in replaced_selection_columns:
+    mental_survey_df[col] = mental_survey_df[col].replace({"Very frequently":"Often"})
+
+mental_survey_df.to_csv("./datasets/mental_final.csv", index=False)
 ###########
 
 ###########
-spotify_df = pd.read_csv("./datasets/spotify_data.csv")
+spotify_df = pd.read_csv("./datasets/spotify_data.csv", index=False)
 spotify_df.head(10)
 
 mental_survey_df["fav_genre"].value_counts()
@@ -161,7 +168,7 @@ replaced_genres = { "acoustic":"Classical",
                     "trip-hop":"EDM",
                     "dancehall":"EDM",}
 
-spotify_df["genre"] = spotify_df["genre"].replace(replaced_genres)
+spotify_df["genre"] = spotify_df["genre"].replace({replaced_genres})
 
 spotify_df["genre"].value_counts()
 
@@ -178,5 +185,3 @@ mental_final_df.head(10)
 spotify_final_df = pd.read_csv("./datasets/spotify_final.csv")
 spotify_final_df.head(10)
 ###########
-
-mental_final_df["fav_genre"].unique()
