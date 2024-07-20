@@ -103,15 +103,15 @@ mental_survey_df["music_effects"] = mental_survey_df["music_effects"].fillna(men
 ###########
 mental_survey_df["anxiety"].value_counts()
 mental_survey_df["anxiety"] = mental_survey_df["anxiety"].replace({7.5:7})
-mental_survey_df["anxiety"] = mental_survey_df["anxiety"].astype(object)
+mental_survey_df["anxiety"] = mental_survey_df["anxiety"].astype(int)
 
 mental_survey_df["depression"].value_counts()
 mental_survey_df["depression"] = mental_survey_df["depression"].replace({3.5:3})
-mental_survey_df["depression"] = mental_survey_df["depression"].astype(object)
+mental_survey_df["depression"] = mental_survey_df["depression"].astype(int)
 
 mental_survey_df["insomnia"].value_counts()
 mental_survey_df["insomnia"] = mental_survey_df["insomnia"].replace({3.5:3})
-mental_survey_df["insomnia"] = mental_survey_df["insomnia"].astype(object)
+mental_survey_df["insomnia"] = mental_survey_df["insomnia"].astype(int)
 
 mental_survey_df["age"] = mental_survey_df["age"].astype(int)
 
