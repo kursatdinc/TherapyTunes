@@ -1,5 +1,7 @@
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
 from catboost import CatBoostClassifier
 from sklearn.metrics import cohen_kappa_score
 from sklearn.model_selection import train_test_split
@@ -85,39 +87,15 @@ mental_after_eda.to_csv("./datasets/mental_before_ml.csv", index=False)
 
 ##############
 
+mental_after_eda = pd.read_csv("./datasets/mental_before_ml.csv")
+
 y = mental_after_eda["anxiety"]
 X = mental_after_eda.drop(columns=["tempo", "anxiety", "depression", "insomnia"], axis=1)
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-
-class QWKObjective(object):
-    def calc_ders_range(self, approxes, targets, weights):
-        labels = np.array(targets) + a
-        preds = np.array(approxes) + a
-        preds = preds.clip(1, 6)
-        f = 1/2 * np.sum((preds - labels)**2)
-        g = 1/2 * np.sum((preds - a)**2 + b)
-        df = preds - labels
-        dg = preds - a
-        grad = (df / g - f * dg / g**2) * len(labels)
-        hess = (1 / g - (2 * df * dg) / (g**2) + (2 * f * dg**2) / (g**3)) * len(labels)
-        return list(zip(grad, hess))
-
-class QWKMetric(object):
-    def get_final_error(self, error, weight):
-        return error
-
-    def is_max_optimal(self):
-        return True
-
-    def evaluate(self, approxes, targets, weight):
-        approxes = approxes[0]
-        targets = np.array(targets) + a
-        approxes = np.array(approxes) + a
-        approxes = approxes.clip(1, 6).round()
-        qwk = cohen_kappa_score(targets, approxes, weights="quadratic")
-        return qwk, 0
     
+##############
+
 def weighted_kappa(y_true, y_pred):
     return cohen_kappa_score(y_true, np.round(y_pred), weights="quadratic")
 
@@ -127,7 +105,6 @@ model = CatBoostClassifier(iterations=1000,
                            loss_function="MultiClass",
                            eval_metric="WKappa")
 
-
 model.fit(X_train, y_train,
           eval_set=(X_test, y_test),
           verbose=100)
@@ -136,3 +113,20 @@ y_pred = model.predict(X_test)
 
 wkappa_score = weighted_kappa(y_test, y_pred)
 print(f"Ağırlıklı Kappa Skoru: {wkappa_score}")
+
+random_sample = X.sample(1)
+prediction = model.predict(random_sample)
+
+def plot_importance(model, features, dataframe, save=False):
+    num = len(dataframe)
+    feature_imp = pd.DataFrame({"Value": model.feature_importances_, "Feature": features.columns})
+    plt.figure(figsize=(10, 10))
+    sns.set_theme(font_scale=1)
+    sns.barplot(x="Value", y="Feature", data=feature_imp.sort_values(by="Value", ascending=False)[0:num])
+    plt.title("Features")
+    plt.tight_layout()
+    plt.show()
+    if save:
+        plt.savefig("importances.png")
+
+plot_importance(model, X, mental_after_eda)
