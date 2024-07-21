@@ -1,11 +1,27 @@
 import streamlit as st
 from st_clickable_images import clickable_images
+import streamlit.components.v1 as components
+import pandas as pd
+
+@st.cache_data
+def load_data():
+    df = pd.read_csv("./datasets/spotify_final.csv")
+    
+    return df
 
 def load_css():
     with open('.streamlit/style.css') as f:
         st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 
 load_css()
+
+def spotify_player(track_id):
+    embed_link = f"https://open.spotify.com/embed/track/{track_id}"
+    return components.html(
+        f'<iframe src="{embed_link}" width="300" height="380" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>',
+        height=400)
+
+df = load_data()
 
 questions = [
     {
@@ -127,6 +143,11 @@ questions = [
         "choices": ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra",
                     "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"],
         "image_urls": ["https://miro.medium.com/v2/resize:fit:800/0*2llmBOj3G8yJ4Jil.jpg"] * 12
+    },
+    {
+        "type": "spotify_comparison",
+        "question": "Which song do you prefer?",
+        "track_ids": [df.sample(2)["track_id"].values[0], df.sample(2)["track_id"].values[1]]
     }
 ]
 
@@ -193,6 +214,28 @@ if quiz_data:
             st.session_state.question_index += 1
             st.session_state.quiz_data = get_question(st.session_state.question_index)
             st.rerun()
+
+    elif quiz_data["type"] == "spotify_comparison":
+        st.markdown(f"**{quiz_data['question']}**")
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            spotify_player(quiz_data["track_ids"][0])
+            if st.button("Select", key="select_song_1"):
+                selected_answer = f"Song 1 (ID: {quiz_data['track_ids'][0]})"
+                st.session_state.user_answers.append({quiz_data['question']: selected_answer})
+                st.session_state.question_index += 1
+                st.session_state.quiz_data = get_question(st.session_state.question_index)
+                st.rerun()
+        
+        with col2:
+            spotify_player(quiz_data["track_ids"][1])
+            if st.button("Select", key="select_song_2"):
+                selected_answer = f"Song 2 (ID: {quiz_data['track_ids'][1]})"
+                st.session_state.user_answers.append({quiz_data['question']: selected_answer})
+                st.session_state.question_index += 1
+                st.session_state.quiz_data = get_question(st.session_state.question_index)
+                st.rerun()
 
 else:
     st.markdown("Quiz completed. Here are your answers:")

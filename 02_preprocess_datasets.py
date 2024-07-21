@@ -137,7 +137,7 @@ mental_survey_df.head(10)
 ###########
 # READ DATA - SPOTIFY
 ###########
-spotify_df = pd.read_csv("./datasets/spotify_data.csv", index=False)
+spotify_df = pd.read_csv("./datasets/spotify_data.csv")
 ###########
 
 
