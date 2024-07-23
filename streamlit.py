@@ -105,7 +105,6 @@ class SegmentSelector:
         return (n - 1).bit_length()
 
 
-
 questions = [
     {
         "type": "slider",
@@ -140,9 +139,17 @@ questions = [
     {
         "type": "image_3",
         "question": "What's your favorite music genre?",
-        "choices": ["Classical", "Country", "EDM", "Folk", "Gospel", "Hip-Hop", "Jazz",
-                    "K-Pop", "Latin"],
-        "image_urls": ["https://i.ibb.co/q1Q2Nqw/dj.png"] * 9
+        "choices": ["Dance", "Instrumental", "Rap", "Rock",
+                    "Metal", "Pop", "Jazz", "Traditional", "R&B"],
+        "image_urls": ["https://i.ibb.co/qmgbg2M/022-dance.png",
+                       "https://i.ibb.co/YhNddTN/23-instrumental.png",
+                       "https://i.ibb.co/WBGY2T0/24-rap.png",
+                       "https://i.ibb.co/K0Zzkhp/25-rock.png",
+                       "https://i.ibb.co/2gcSHn7/26-metal.png",
+                       "https://i.ibb.co/806CwDY/27-pop.png",
+                       "https://i.ibb.co/ypbW2vF/28-jazz.png",
+                       "https://i.ibb.co/R4QNXZg/29-traditional.png",
+                       "https://i.ibb.co/MGYKKgv/30-rnb.png"]
     },
     {
         "type": "image_2",
@@ -156,39 +163,39 @@ questions = [
         "main_question": "Select the frequency of listening to music genres?",
         "sub_questions": [
             {
-                "question": "Classical",
+                "question": "Dance",
                 "options": ["Never", "Rarely", "Sometimes", "Often"]
             },
             {
-                "question": "Country",
+                "question": "Instrumental",
                 "options": ["Never", "Rarely", "Sometimes", "Often"]
             },
             {
-                "question": "EDM",
+                "question": "Traditional",
                 "options": ["Never", "Rarely", "Sometimes", "Often"]
             },
             {
-                "question": "Folk",
+                "question": "Rap",
                 "options": ["Never", "Rarely", "Sometimes", "Often"]
             },
             {
-                "question": "Gospel",
+                "question": "R&B",
                 "options": ["Never", "Rarely", "Sometimes", "Often"]
             },
             {
-                "question": "Hip-Hop",
+                "question": "Rock",
+                "options": ["Never", "Rarely", "Sometimes", "Often"]
+            },
+            {
+                "question": "Metal",
+                "options": ["Never", "Rarely", "Sometimes", "Often"]
+            },
+            {
+                "question": "Pop",
                 "options": ["Never", "Rarely", "Sometimes", "Often"]
             },
             {
                 "question": "Jazz",
-                "options": ["Never", "Rarely", "Sometimes", "Often"]
-            },
-            {
-                "question": "K-Pop",
-                "options": ["Never", "Rarely", "Sometimes", "Often"]
-            },
-            {
-                "question": "Latin",
                 "options": ["Never", "Rarely", "Sometimes", "Often"]
             }
         ]
