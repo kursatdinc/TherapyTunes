@@ -19,8 +19,9 @@ load_css()
 
 def spotify_player(track_id):
     embed_link = f"https://open.spotify.com/embed/track/{track_id}"
+
     return components.html(
-        f"<iframe src="{embed_link}" width="300" height="380" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>",
+        f'<iframe src="{embed_link}" width="300" height="380" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>',
         height=400)
 
 df, df_segment = load_data()
@@ -267,7 +268,7 @@ quiz_data = st.session_state.quiz_data
 
 if quiz_data:
     if quiz_data["type"] == "slider":
-        st.markdown(f"**{quiz_data["question"]}**")
+        st.markdown(f"**{quiz_data['question']}**")
         slider_value = st.slider("Your answer", min_value=quiz_data["min_value"], max_value=quiz_data["max_value"], step=quiz_data["step"])
         
         if st.button("Submit"):
@@ -277,13 +278,13 @@ if quiz_data:
             st.rerun()
 
     elif quiz_data["type"] == "multi_question":
-        st.markdown(f"**{quiz_data["main_question"]}**")
+        st.markdown(f"**{quiz_data['main_question']}**")
         sub_answers = {}
         col1, col2, col3 = st.columns(3)
         columns = [col1, col2, col3]
         for i, sub_question in enumerate(quiz_data["sub_questions"]):
             with columns[i % 3]:
-                st.markdown(f"**{sub_question["question"]}**")
+                st.markdown(f"**{sub_question['question']}**")
                 options = sub_question["options"]
                 min_value = 0
                 max_value = len(options) - 1
@@ -303,7 +304,7 @@ if quiz_data:
             st.rerun()
 
     elif quiz_data["type"] == "image":
-        st.markdown(f"**{quiz_data["question"]}**")
+        st.markdown(f"**{quiz_data['question']}**")
         clicked = clickable_images(
             quiz_data["image_urls"],
             titles=[choice for choice in quiz_data["choices"]],
@@ -319,7 +320,7 @@ if quiz_data:
             st.rerun()
 
     elif quiz_data["type"] == "segment_selector":
-        st.markdown(f"**{quiz_data["question"]}**")
+        st.markdown(f"**{quiz_data['question']}**")
         
         if not st.session_state.segment_selector.is_complete:
             current_pair = st.session_state.segment_selector.get_next_pair()
