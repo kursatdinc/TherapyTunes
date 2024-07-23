@@ -11,11 +11,11 @@ def load_data():
 
     return df, df_segment
 
+
 def load_css():
     with open(".streamlit/style.css") as f:
         st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
-load_css()
 
 def spotify_player(track_id):
     embed_link = f"https://open.spotify.com/embed/track/{track_id}"
@@ -23,8 +23,6 @@ def spotify_player(track_id):
     return components.html(
         f'<iframe src="{embed_link}" width="300" height="380" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>',
         height=400)
-
-df, df_segment = load_data()
 
 
 class SegmentSelector:
@@ -239,6 +237,7 @@ def get_question(index):
     else:
         return None
 
+
 def initialize_session_state():
     if "question_index" not in st.session_state:
         st.session_state.question_index = 0
@@ -260,151 +259,177 @@ def initialize_session_state():
         ]
         st.session_state.segment_selector = SegmentSelector(dataset)
 
-st.title("Music Habits Quiz")
 
-initialize_session_state()
+def run_quiz():
+    quiz_data = st.session_state.quiz_data
 
-quiz_data = st.session_state.quiz_data
-
-if quiz_data:
-    if quiz_data["type"] == "slider":
-        st.markdown(f"**{quiz_data['question']}**")
-        slider_value = st.slider("Your answer", min_value=quiz_data["min_value"], max_value=quiz_data["max_value"], step=quiz_data["step"])
-        
-        if st.button("Submit"):
-            st.session_state.user_answers.append({quiz_data["question"]: slider_value})
-            st.session_state.question_index += 1
-            st.session_state.quiz_data = get_question(st.session_state.question_index)
-            st.rerun()
-
-    elif quiz_data["type"] == "multi_question":
-        st.markdown(f"**{quiz_data['main_question']}**")
-        sub_answers = {}
-        col1, col2, col3 = st.columns(3)
-        columns = [col1, col2, col3]
-        for i, sub_question in enumerate(quiz_data["sub_questions"]):
-            with columns[i % 3]:
-                st.markdown(f"**{sub_question['question']}**")
-                options = sub_question["options"]
-                min_value = 0
-                max_value = len(options) - 1
-                value = 0
-                
-                selected_value = st.slider("", min_value=min_value, max_value=max_value, value=value, step=1, key=f"slider_{i}")
-                selected_option = options[selected_value]
-                
-                st.write(f"Selected: {selected_option}")
-                
-                sub_answers[sub_question["question"]] = selected_option
-
-        if st.button("Submit Answers"):
-            st.session_state.user_answers.append({quiz_data["main_question"]: sub_answers})
-            st.session_state.question_index += 1
-            st.session_state.quiz_data = get_question(st.session_state.question_index)
-            st.rerun()
-
-    elif quiz_data["type"] == "image_2":
-        st.markdown(f"**{quiz_data['question']}**")
-        clicked = clickable_images(
-            quiz_data["image_urls"],
-            titles=[choice for choice in quiz_data["choices"]],
-            div_style={"display": "grid",
-                    "grid-template-columns": "repeat(2, 1fr)",
-                    "gap": "10px",
-                    "justify-content": "center",
-                    "background-color": "#E8E8E8",
-                    "padding": "20px"},
-            img_style={"width": "150px",
-                    "height": "150px",
-                    "object-fit": "cover",
-                    "margin": "auto"})
-
-        if clicked > -1:
-            selected_answer = quiz_data["choices"][clicked]
-            st.session_state.user_answers.append({quiz_data["question"]: selected_answer})
-            st.session_state.question_index += 1
-            st.session_state.quiz_data = get_question(st.session_state.question_index)
-            st.rerun()
-
-    elif quiz_data["type"] == "image_3":
-        st.markdown(f"**{quiz_data['question']}**")
-        clicked = clickable_images(
-            quiz_data["image_urls"],
-            titles=[choice for choice in quiz_data["choices"]],
-            div_style={"display": "grid",
-                    "grid-template-columns": "repeat(3, 1fr)",
-                    "gap": "10px",
-                    "justify-content": "center",
-                    "background-color": "#E8E8E8",
-                    "padding": "20px"},
-            img_style={"width": "150px",
-                    "height": "150px",
-                    "object-fit": "cover",
-                    "margin": "auto"})
-
-        if clicked > -1:
-            selected_answer = quiz_data["choices"][clicked]
-            st.session_state.user_answers.append({quiz_data["question"]: selected_answer})
-            st.session_state.question_index += 1
-            st.session_state.quiz_data = get_question(st.session_state.question_index)
-            st.rerun()
-
-    elif quiz_data["type"] == "segment_selector":
-        st.markdown(f"**{quiz_data['question']}**")
-        
-        if not st.session_state.segment_selector.is_complete:
-            current_pair = st.session_state.segment_selector.get_next_pair()
+    if quiz_data:
+        if quiz_data["type"] == "slider":
+            st.markdown(f"**{quiz_data['question']}**")
+            slider_value = st.slider("Your answer", min_value=quiz_data["min_value"], max_value=quiz_data["max_value"], step=quiz_data["step"])
             
-            if current_pair:
-                col1, col2 = st.columns(2)
-                
-                with col1:
-                    segment1 = current_pair[0]
-                    song1 = st.session_state.segment_selector.get_random_song(segment1)
-                    spotify_player(song1["track_id"])
+            if st.button("Submit"):
+                st.session_state.user_answers.append({quiz_data["question"]: slider_value})
+                st.session_state.question_index += 1
+                st.session_state.quiz_data = get_question(st.session_state.question_index)
+                st.rerun()
+
+        elif quiz_data["type"] == "multi_question":
+            st.markdown(f"**{quiz_data['main_question']}**")
+            sub_answers = {}
+            col1, col2, col3 = st.columns(3)
+            columns = [col1, col2, col3]
+            for i, sub_question in enumerate(quiz_data["sub_questions"]):
+                with columns[i % 3]:
+                    st.markdown(f"**{sub_question['question']}**")
+                    options = sub_question["options"]
+                    min_value = 0
+                    max_value = len(options) - 1
+                    value = 0
                     
-                    if st.button("Select", key="select_1"):
+                    selected_value = st.slider("", min_value=min_value, max_value=max_value, value=value, step=1, key=f"slider_{i}")
+                    selected_option = options[selected_value]
+                    
+                    st.write(f"Selected: {selected_option}")
+                    
+                    sub_answers[sub_question["question"]] = selected_option
+
+            if st.button("Submit Answers"):
+                st.session_state.user_answers.append({quiz_data["main_question"]: sub_answers})
+                st.session_state.question_index += 1
+                st.session_state.quiz_data = get_question(st.session_state.question_index)
+                st.rerun()
+
+        elif quiz_data["type"] == "image_2":
+            st.markdown(f"**{quiz_data['question']}**")
+            clicked = clickable_images(
+                quiz_data["image_urls"],
+                titles=[choice for choice in quiz_data["choices"]],
+                div_style={"display": "grid",
+                        "grid-template-columns": "repeat(2, 1fr)",
+                        "gap": "10px",
+                        "justify-content": "center",
+                        "background-color": "#E8E8E8",
+                        "padding": "20px"},
+                img_style={"width": "150px",
+                        "height": "150px",
+                        "object-fit": "cover",
+                        "margin": "auto"})
+
+            if clicked > -1:
+                selected_answer = quiz_data["choices"][clicked]
+                st.session_state.user_answers.append({quiz_data["question"]: selected_answer})
+                st.session_state.question_index += 1
+                st.session_state.quiz_data = get_question(st.session_state.question_index)
+                st.rerun()
+
+        elif quiz_data["type"] == "image_3":
+            st.markdown(f"**{quiz_data['question']}**")
+            clicked = clickable_images(
+                quiz_data["image_urls"],
+                titles=[choice for choice in quiz_data["choices"]],
+                div_style={"display": "grid",
+                        "grid-template-columns": "repeat(3, 1fr)",
+                        "gap": "10px",
+                        "justify-content": "center",
+                        "background-color": "#E8E8E8",
+                        "padding": "20px"},
+                img_style={"width": "150px",
+                        "height": "150px",
+                        "object-fit": "cover",
+                        "margin": "auto"})
+
+            if clicked > -1:
+                selected_answer = quiz_data["choices"][clicked]
+                st.session_state.user_answers.append({quiz_data["question"]: selected_answer})
+                st.session_state.question_index += 1
+                st.session_state.quiz_data = get_question(st.session_state.question_index)
+                st.rerun()
+
+        elif quiz_data["type"] == "segment_selector":
+            st.markdown(f"**{quiz_data['question']}**")
+            
+            if not st.session_state.segment_selector.is_complete:
+                current_pair = st.session_state.segment_selector.get_next_pair()
+                
+                if current_pair:
+                    col1, col2 = st.columns(2)
+                    
+                    with col1:
+                        segment1 = current_pair[0]
+                        song1 = st.session_state.segment_selector.get_random_song(segment1)
+                        spotify_player(song1["track_id"])
+                        
+                        if st.button("Select", key="select_1"):
+                            winner, round_number = st.session_state.segment_selector.make_choice(1)
+                            if winner:
+                                st.session_state.user_answers.append({"selected_segment": winner})
+                                st.session_state.question_index += 1
+                                st.session_state.quiz_data = get_question(st.session_state.question_index)
+                            st.rerun()
+                    
+                    if len(current_pair) > 1:
+                        with col2:
+                            segment2 = current_pair[1]
+                            song2 = st.session_state.segment_selector.get_random_song(segment2)
+                            spotify_player(song2["track_id"])
+                            
+                            if st.button("Select", key="select_2"):
+                                winner, round_number = st.session_state.segment_selector.make_choice(2)
+                                if winner:
+                                    st.session_state.user_answers.append({"selected_segment": winner})
+                                    st.session_state.question_index += 1
+                                    st.session_state.quiz_data = get_question(st.session_state.question_index)
+                                st.rerun()
+                    else:
                         winner, round_number = st.session_state.segment_selector.make_choice(1)
                         if winner:
                             st.session_state.user_answers.append({"selected_segment": winner})
                             st.session_state.question_index += 1
                             st.session_state.quiz_data = get_question(st.session_state.question_index)
                         st.rerun()
-                
-                if len(current_pair) > 1:
-                    with col2:
-                        segment2 = current_pair[1]
-                        song2 = st.session_state.segment_selector.get_random_song(segment2)
-                        spotify_player(song2["track_id"])
-                        
-                        if st.button("Select", key="select_2"):
-                            winner, round_number = st.session_state.segment_selector.make_choice(2)
-                            if winner:
-                                st.session_state.user_answers.append({"selected_segment": winner})
-                                st.session_state.question_index += 1
-                                st.session_state.quiz_data = get_question(st.session_state.question_index)
-                            st.rerun()
+
+    else:
+        st.markdown("Quiz completed. Here are your answers:")
+        for answer in st.session_state.user_answers:
+            for question, response in answer.items():
+                st.write(f"**{question}**")
+                if isinstance(response, dict):
+                    for sub_q, sub_r in response.items():
+                        st.write(f"  {sub_q}: {sub_r}")
                 else:
-                    winner, round_number = st.session_state.segment_selector.make_choice(1)
-                    if winner:
-                        st.session_state.user_answers.append({"selected_segment": winner})
-                        st.session_state.question_index += 1
-                        st.session_state.quiz_data = get_question(st.session_state.question_index)
-                    st.rerun()
+                    st.write(f"  {response}")
+            st.write("---")
 
 
+def tab2_content():
+    st.title("Tab 2")
+    st.write("This is the content for Tab 2. You can add your desired content here.")
 
 
+def tab3_content():
+    st.title("Tab 3")
+    st.write("This is the content for Tab 3. You can add your desired content here.")
 
 
-else:
-    st.markdown("Quiz completed. Here are your answers:")
-    for answer in st.session_state.user_answers:
-        for question, response in answer.items():
-            st.write(f"**{question}**")
-            if isinstance(response, dict):
-                for sub_q, sub_r in response.items():
-                    st.write(f"  {sub_q}: {sub_r}")
-            else:
-                st.write(f"  {response}")
-        st.write("---")
+###############
+###############
+
+
+st.set_page_config(layout="wide")
+load_css()
+df, df_segment = load_data()
+
+
+tab1, tab2, tab3 = st.tabs(["Quiz", "Tab 2", "Tab 3"])
+
+with tab1:
+    st.title("Music Habits Quiz")
+    initialize_session_state()
+    run_quiz()
+
+with tab2:
+    tab2_content()
+
+with tab3:
+    tab3_content()
