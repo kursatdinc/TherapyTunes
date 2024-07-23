@@ -2,12 +2,14 @@ import streamlit as st
 from st_clickable_images import clickable_images
 import streamlit.components.v1 as components
 import pandas as pd
+import random
 
 @st.cache_data
 def load_data():
     df = pd.read_csv("./datasets/spotify_final.csv")
-    
-    return df
+    df_segment = pd.read_csv("./datasets/segment.csv")
+
+    return df, df_segment
 
 def load_css():
     with open('.streamlit/style.css') as f:
@@ -21,7 +23,102 @@ def spotify_player(track_id):
         f'<iframe src="{embed_link}" width="300" height="380" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>',
         height=400)
 
-df = load_data()
+df, df_segment = load_data()
+
+
+class SegmentSelector:
+    def __init__(self, dataset):
+        self.dataset = dataset
+        self.segments = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+        random.shuffle(self.segments)
+        
+        self.current_segments = self.segments.copy()
+        self.round_number = 1
+        self.current_pair_index = 0
+        self.winners = []
+        self.is_complete = False
+        self.final_winner = None
+
+    def create_pairs(self, list_to_pair):
+        pairs = list(zip(list_to_pair[::2], list_to_pair[1::2]))
+        if len(list_to_pair) % 2 != 0:
+            pairs.append((list_to_pair[-1],))
+        return pairs
+
+    def get_random_song(self, segment):
+        songs = [song for song in self.dataset if song['segment'] == segment]
+        return random.choice(songs)
+
+    def get_next_pair(self):
+        if self.is_complete:
+            return None
+
+        if not self.current_segments:
+            self.start_new_round()
+
+        if self.current_pair_index < len(self.current_segments):
+            if isinstance(self.current_segments[self.current_pair_index], tuple):
+                return self.current_segments[self.current_pair_index]
+            else:
+                return (self.current_segments[self.current_pair_index],)
+        else:
+            return None
+
+    def start_new_round(self):
+        if len(self.winners) == 1:
+            self.final_winner = self.winners[0]
+            self.is_complete = True
+        else:
+            self.current_segments = self.create_pairs(self.winners)
+            self.winners = []
+            self.current_pair_index = 0
+            self.round_number += 1
+
+    def make_choice(self, choice):
+        if self.is_complete:
+            return self.final_winner, self.round_number
+
+        current_pair = self.get_next_pair()
+        if not current_pair:
+            self.start_new_round()
+            return None, self.round_number
+
+        if len(current_pair) == 1:
+            winner = current_pair[0]
+        else:
+            winner = current_pair[0] if choice == 1 else current_pair[1]
+
+        self.winners.append(winner)
+        self.current_pair_index += 1
+
+        if self.current_pair_index >= len(self.current_segments):
+            self.start_new_round()
+
+        if self.is_complete:
+            return self.final_winner, self.round_number
+        else:
+            return None, self.round_number
+
+    def get_total_rounds(self):
+        n = len(self.segments)
+        return (n - 1).bit_length()
+
+
+def initialize_segment_selector():
+    if "segment_selector" not in st.session_state:
+        dataset = [
+            {'segment': 0, 'track_id': df_segment[df_segment["segment"] == 0].sample(1)["track_id"].values[0]},
+            {'segment': 1, 'track_id': df_segment[df_segment["segment"] == 1].sample(1)["track_id"].values[0]},
+            {'segment': 2, 'track_id': df_segment[df_segment["segment"] == 2].sample(1)["track_id"].values[0]},
+            {'segment': 3, 'track_id': df_segment[df_segment["segment"] == 3].sample(1)["track_id"].values[0]},
+            {'segment': 4, 'track_id': df_segment[df_segment["segment"] == 4].sample(1)["track_id"].values[0]},
+            {'segment': 5, 'track_id': df_segment[df_segment["segment"] == 5].sample(1)["track_id"].values[0]},
+            {'segment': 6, 'track_id': df_segment[df_segment["segment"] == 6].sample(1)["track_id"].values[0]},
+            {'segment': 7, 'track_id': df_segment[df_segment["segment"] == 7].sample(1)["track_id"].values[0]},
+            {'segment': 8, 'track_id': df_segment[df_segment["segment"] == 8].sample(1)["track_id"].values[0]}
+        ]
+        st.session_state.segment_selector = SegmentSelector(dataset)
+
 
 questions = [
     {
@@ -145,11 +242,11 @@ questions = [
         "image_urls": ["https://miro.medium.com/v2/resize:fit:800/0*2llmBOj3G8yJ4Jil.jpg"] * 12
     },
     {
-        "type": "spotify_comparison",
-        "question": "Which song do you prefer?",
-        "track_ids": [df.sample(2)["track_id"].values[0], df.sample(2)["track_id"].values[1]]
+        "type": "segment_selector",
+        "question": "Which One?",
     }
 ]
+
 
 def get_question(index):
     if index < len(questions):
@@ -190,9 +287,18 @@ if quiz_data:
         for i, sub_question in enumerate(quiz_data["sub_questions"]):
             with columns[i % 3]:
                 st.markdown(f"**{sub_question['question']}**")
-                selected_option = st.radio("", sub_question["options"], key=f"radio_{i}")
+                options = sub_question["options"]
+                min_value = 0
+                max_value = len(options) - 1
+                value = len(options) // 2 
+                
+                selected_value = st.slider("", min_value=min_value, max_value=max_value, value=value, step=1, key=f"slider_{i}")
+                selected_option = options[selected_value]
+                
+                st.write(f"Selected: {selected_option}")
+                
                 sub_answers[sub_question["question"]] = selected_option
-        
+
         if st.button("Submit Answers"):
             st.session_state.user_answers.append({quiz_data['main_question']: sub_answers})
             st.session_state.question_index += 1
@@ -215,27 +321,50 @@ if quiz_data:
             st.session_state.quiz_data = get_question(st.session_state.question_index)
             st.rerun()
 
-    elif quiz_data["type"] == "spotify_comparison":
+    elif quiz_data["type"] == "segment_selector":
         st.markdown(f"**{quiz_data['question']}**")
-        col1, col2 = st.columns(2)
         
-        with col1:
-            spotify_player(quiz_data["track_ids"][0])
-            if st.button("Select", key="select_song_1"):
-                selected_answer = f"Song 1 (ID: {quiz_data['track_ids'][0]})"
-                st.session_state.user_answers.append({quiz_data['question']: selected_answer})
-                st.session_state.question_index += 1
-                st.session_state.quiz_data = get_question(st.session_state.question_index)
-                st.rerun()
+        initialize_segment_selector()
         
-        with col2:
-            spotify_player(quiz_data["track_ids"][1])
-            if st.button("Select", key="select_song_2"):
-                selected_answer = f"Song 2 (ID: {quiz_data['track_ids'][1]})"
-                st.session_state.user_answers.append({quiz_data['question']: selected_answer})
-                st.session_state.question_index += 1
-                st.session_state.quiz_data = get_question(st.session_state.question_index)
-                st.rerun()
+        if not st.session_state.segment_selector.is_complete:
+            current_pair = st.session_state.segment_selector.get_next_pair()
+            
+            if current_pair:
+                col1, col2 = st.columns(2)
+                
+                with col1:
+                    segment1 = current_pair[0]
+                    song1 = st.session_state.segment_selector.get_random_song(segment1)
+                    spotify_player(song1["track_id"])
+                    
+                    if st.button("Select", key="select_1"):
+                        winner, round_number = st.session_state.segment_selector.make_choice(1)
+                        if winner:
+                            st.session_state.user_answers.append({"selected_segment": winner})
+                            st.session_state.question_index += 1
+                            st.session_state.quiz_data = get_question(st.session_state.question_index)
+                        st.rerun()
+                
+                if len(current_pair) > 1:
+                    with col2:
+                        segment2 = current_pair[1]
+                        song2 = st.session_state.segment_selector.get_random_song(segment2)
+                        spotify_player(song2["track_id"])
+                        
+                        if st.button("Select", key="select_2"):
+                            winner, round_number = st.session_state.segment_selector.make_choice(2)
+                            if winner:
+                                st.session_state.user_answers.append({"selected_segment": winner})
+                                st.session_state.question_index += 1
+                                st.session_state.quiz_data = get_question(st.session_state.question_index)
+                            st.rerun()
+                else:
+                    winner, round_number = st.session_state.segment_selector.make_choice(1)
+                    if winner:
+                        st.session_state.user_answers.append({"selected_segment": winner})
+                        st.session_state.question_index += 1
+                        st.session_state.quiz_data = get_question(st.session_state.question_index)
+                    st.rerun()
 
 else:
     st.markdown("Quiz completed. Here are your answers:")
