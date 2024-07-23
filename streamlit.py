@@ -105,6 +105,7 @@ class SegmentSelector:
         return (n - 1).bit_length()
 
 
+
 questions = [
     {
         "type": "slider",
@@ -121,34 +122,34 @@ questions = [
         "step": 0.25
     },
     {
-        "type": "image",
+        "type": "image_2",
         "question": "Select the music platform that you use?",
         "choices": ["Spotify", "YouTube Music", "Apple Music", "Other"],
-        "image_urls": ["https://upload.wikimedia.org/wikipedia/commons/thumb/2/26/Spotify_logo_with_text.svg/1200px-Spotify_logo_with_text.svg.png",
-                       "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/YT_Music.svg/1024px-YT_Music.svg.png",
-                       "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Apple_Music_logo.svg/2560px-Apple_Music_logo.svg.png",
-                       "https://www.edagroups.com/files/3214/7969/6498/other.png"]
+        "image_urls": ["https://i.ibb.co/60kxcRC/015-spotify.png",
+                       "https://i.ibb.co/sJw4ymT/016-music.png",
+                       "https://i.ibb.co/5LGQRX7/017-apple.png",
+                       "https://i.ibb.co/HYLqd4m/018-more.png"]
     },
     {
-        "type": "image",
+        "type": "image_2",
         "question": "Do you listen to music while working?",
         "choices": ["Yes", "No"],
-        "image_urls": ["https://icon2.cleanpng.com/20180319/opq/kisspng-computer-icons-clip-art-check-yes-ok-icon-5ab061dfcd38e3.7297168415215088318406.jpg",
-                       "https://banner2.cleanpng.com/20180424/wzw/kisspng-no-symbol-sign-clip-art-prohibited-signs-5adf452cc063a7.6278734415245816767881.jpg"]
+        "image_urls": ["https://i.ibb.co/nw72Gr3/013-check.png",
+                       "https://i.ibb.co/6ZTNRC8/014-cancel.png"]
     },
     {
-        "type": "image",
+        "type": "image_3",
         "question": "What's your favorite music genre?",
         "choices": ["Classical", "Country", "EDM", "Folk", "Gospel", "Hip-Hop", "Jazz",
-                    "K-Pop", "Latin", "Lofi", "Metal", "Pop", "R&B", "Rock"],
-        "image_urls": ["https://www.onlinelogomaker.com/blog/wp-content/uploads/2017/06/music-logo-design.jpg"] * 14
+                    "K-Pop", "Latin"],
+        "image_urls": ["https://i.ibb.co/q1Q2Nqw/dj.png"] * 9
     },
     {
-        "type": "image",
+        "type": "image_2",
         "question": "Are you open to listening to new music?",
         "choices": ["Yes", "No"],
-        "image_urls": ["https://icon2.cleanpng.com/20180319/opq/kisspng-computer-icons-clip-art-check-yes-ok-icon-5ab061dfcd38e3.7297168415215088318406.jpg",
-                       "https://banner2.cleanpng.com/20180424/wzw/kisspng-no-symbol-sign-clip-art-prohibited-signs-5adf452cc063a7.6278734415245816767881.jpg"]
+        "image_urls": ["https://i.ibb.co/nw72Gr3/013-check.png",
+                       "https://i.ibb.co/6ZTNRC8/014-cancel.png"]
     },
     {
         "type": "multi_question",
@@ -189,42 +190,34 @@ questions = [
             {
                 "question": "Latin",
                 "options": ["Never", "Rarely", "Sometimes", "Often"]
-            },
-            {
-                "question": "Lofi",
-                "options": ["Never", "Rarely", "Sometimes", "Often"]
-            },
-            {
-                "question": "Metal",
-                "options": ["Never", "Rarely", "Sometimes", "Often"]
-            },
-            {
-                "question": "Pop",
-                "options": ["Never", "Rarely", "Sometimes", "Often"]
-            },
-            {
-                "question": "R&B",
-                "options": ["Never", "Rarely", "Sometimes", "Often"]
-            },
-            {
-                "question": "Rock",
-                "options": ["Never", "Rarely", "Sometimes", "Often"]
-            }]
+            }
+        ]
     },
     {
-        "type": "image",
+        "type": "image_3",
         "question": "Is listening to music good for mental health?",
         "choices": ["Improve", "No Effect", "Worsen"],
-        "image_urls": ["https://icon2.cleanpng.com/20180319/opq/kisspng-computer-icons-clip-art-check-yes-ok-icon-5ab061dfcd38e3.7297168415215088318406.jpg",
-                       "https://banner2.cleanpng.com/20180424/wzw/kisspng-no-symbol-sign-clip-art-prohibited-signs-5adf452cc063a7.6278734415245816767881.jpg",
-                       "https://banner2.cleanpng.com/20180424/wzw/kisspng-no-symbol-sign-clip-art-prohibited-signs-5adf452cc063a7.6278734415245816767881.jpg"]
+        "image_urls": ["https://i.ibb.co/sQqjgbt/019-thumb-up.png",
+                       "https://i.ibb.co/m5RLhMt/021-line.png",
+                       "https://i.ibb.co/94gkgTD/020-thumb-down.png"]
     },
     {
-        "type": "image",
+        "type": "image_3",
         "question": "What's your zodiac sign?",
         "choices": ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra",
                     "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"],
-        "image_urls": ["https://miro.medium.com/v2/resize:fit:800/0*2llmBOj3G8yJ4Jil.jpg"] * 12
+        "image_urls": ["https://i.ibb.co/XV3GDzw/001-aries.png",
+                       "https://i.ibb.co/t4K7t9J/002-taurus.png",
+                       "https://i.ibb.co/VN8PpmM/003-gemini.png",
+                       "https://i.ibb.co/dDQhHJ2/004-cancer.png",
+                       "https://i.ibb.co/q14xXsn/005-leo.png",
+                       "https://i.ibb.co/zGLnSby/006-virgo.png",
+                       "https://i.ibb.co/kHYt5Fd/007-libra.png",
+                       "https://i.ibb.co/mBTmVrV/008-scorpio.png",
+                       "https://i.ibb.co/JKbxwhb/009-sagittarius.png",
+                       "https://i.ibb.co/2KRqsBn/010-capricorn.png",
+                       "https://i.ibb.co/YB6WYkt/011-aquarius.png",
+                       "https://i.ibb.co/YQjfWyy/012-pisces.png"]
     },
     {
         "type": "segment_selector",
@@ -303,14 +296,44 @@ if quiz_data:
             st.session_state.quiz_data = get_question(st.session_state.question_index)
             st.rerun()
 
-    elif quiz_data["type"] == "image":
+    elif quiz_data["type"] == "image_2":
         st.markdown(f"**{quiz_data['question']}**")
         clicked = clickable_images(
             quiz_data["image_urls"],
             titles=[choice for choice in quiz_data["choices"]],
-            div_style={"display": "flex", "justify-content": "center", "flex-wrap": "wrap"},
-            img_style={"margin": "5px", "height": "200px"},
-        )
+            div_style={"display": "grid",
+                    "grid-template-columns": "repeat(2, 1fr)",
+                    "gap": "10px",
+                    "justify-content": "center",
+                    "background-color": "#E8E8E8",
+                    "padding": "20px"},
+            img_style={"width": "150px",
+                    "height": "150px",
+                    "object-fit": "cover",
+                    "margin": "auto"})
+
+        if clicked > -1:
+            selected_answer = quiz_data["choices"][clicked]
+            st.session_state.user_answers.append({quiz_data["question"]: selected_answer})
+            st.session_state.question_index += 1
+            st.session_state.quiz_data = get_question(st.session_state.question_index)
+            st.rerun()
+
+    elif quiz_data["type"] == "image_3":
+        st.markdown(f"**{quiz_data['question']}**")
+        clicked = clickable_images(
+            quiz_data["image_urls"],
+            titles=[choice for choice in quiz_data["choices"]],
+            div_style={"display": "grid",
+                    "grid-template-columns": "repeat(3, 1fr)",
+                    "gap": "10px",
+                    "justify-content": "center",
+                    "background-color": "#E8E8E8",
+                    "padding": "20px"},
+            img_style={"width": "150px",
+                    "height": "150px",
+                    "object-fit": "cover",
+                    "margin": "auto"})
 
         if clicked > -1:
             selected_answer = quiz_data["choices"][clicked]
