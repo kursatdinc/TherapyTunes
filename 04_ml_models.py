@@ -8,7 +8,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder, RobustScaler
 
 pd.set_option("display.max_columns", None)
-pd.set_option('display.float_format', lambda x: '%.3f' % x)
+pd.set_option("display.float_format", lambda x: "%.3f" % x)
 
 mental_after_eda = pd.read_csv("./datasets/mental_after_eda.csv")
 

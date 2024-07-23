@@ -12,15 +12,15 @@ def load_data():
     return df, df_segment
 
 def load_css():
-    with open('.streamlit/style.css') as f:
-        st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
+    with open(".streamlit/style.css") as f:
+        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
 load_css()
 
 def spotify_player(track_id):
     embed_link = f"https://open.spotify.com/embed/track/{track_id}"
     return components.html(
-        f'<iframe src="{embed_link}" width="300" height="380" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>',
+        f"<iframe src="{embed_link}" width="300" height="380" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>",
         height=400)
 
 df, df_segment = load_data()
@@ -46,7 +46,7 @@ class SegmentSelector:
         return pairs
 
     def get_random_song(self, segment):
-        songs = [song for song in self.dataset if song['segment'] == segment]
+        songs = [song for song in self.dataset if song["segment"] == segment]
         return random.choice(songs)
 
     def get_next_pair(self):
@@ -102,22 +102,6 @@ class SegmentSelector:
     def get_total_rounds(self):
         n = len(self.segments)
         return (n - 1).bit_length()
-
-
-def initialize_segment_selector():
-    if "segment_selector" not in st.session_state:
-        dataset = [
-            {'segment': 0, 'track_id': df_segment[df_segment["segment"] == 0].sample(1)["track_id"].values[0]},
-            {'segment': 1, 'track_id': df_segment[df_segment["segment"] == 1].sample(1)["track_id"].values[0]},
-            {'segment': 2, 'track_id': df_segment[df_segment["segment"] == 2].sample(1)["track_id"].values[0]},
-            {'segment': 3, 'track_id': df_segment[df_segment["segment"] == 3].sample(1)["track_id"].values[0]},
-            {'segment': 4, 'track_id': df_segment[df_segment["segment"] == 4].sample(1)["track_id"].values[0]},
-            {'segment': 5, 'track_id': df_segment[df_segment["segment"] == 5].sample(1)["track_id"].values[0]},
-            {'segment': 6, 'track_id': df_segment[df_segment["segment"] == 6].sample(1)["track_id"].values[0]},
-            {'segment': 7, 'track_id': df_segment[df_segment["segment"] == 7].sample(1)["track_id"].values[0]},
-            {'segment': 8, 'track_id': df_segment[df_segment["segment"] == 8].sample(1)["track_id"].values[0]}
-        ]
-        st.session_state.segment_selector = SegmentSelector(dataset)
 
 
 questions = [
@@ -261,6 +245,19 @@ def initialize_session_state():
         st.session_state.quiz_data = get_question(st.session_state.question_index)
     if "user_answers" not in st.session_state:
         st.session_state.user_answers = []
+    if "segment_selector" not in st.session_state:
+        dataset = [
+            {"segment": 0, "track_id": df_segment[df_segment["segment"] == 0].sample(1)["track_id"].values[0]},
+            {"segment": 1, "track_id": df_segment[df_segment["segment"] == 1].sample(1)["track_id"].values[0]},
+            {"segment": 2, "track_id": df_segment[df_segment["segment"] == 2].sample(1)["track_id"].values[0]},
+            {"segment": 3, "track_id": df_segment[df_segment["segment"] == 3].sample(1)["track_id"].values[0]},
+            {"segment": 4, "track_id": df_segment[df_segment["segment"] == 4].sample(1)["track_id"].values[0]},
+            {"segment": 5, "track_id": df_segment[df_segment["segment"] == 5].sample(1)["track_id"].values[0]},
+            {"segment": 6, "track_id": df_segment[df_segment["segment"] == 6].sample(1)["track_id"].values[0]},
+            {"segment": 7, "track_id": df_segment[df_segment["segment"] == 7].sample(1)["track_id"].values[0]},
+            {"segment": 8, "track_id": df_segment[df_segment["segment"] == 8].sample(1)["track_id"].values[0]}
+        ]
+        st.session_state.segment_selector = SegmentSelector(dataset)
 
 st.title("Music Habits Quiz")
 
@@ -270,27 +267,27 @@ quiz_data = st.session_state.quiz_data
 
 if quiz_data:
     if quiz_data["type"] == "slider":
-        st.markdown(f"**{quiz_data['question']}**")
+        st.markdown(f"**{quiz_data["question"]}**")
         slider_value = st.slider("Your answer", min_value=quiz_data["min_value"], max_value=quiz_data["max_value"], step=quiz_data["step"])
         
         if st.button("Submit"):
-            st.session_state.user_answers.append({quiz_data['question']: slider_value})
+            st.session_state.user_answers.append({quiz_data["question"]: slider_value})
             st.session_state.question_index += 1
             st.session_state.quiz_data = get_question(st.session_state.question_index)
             st.rerun()
 
     elif quiz_data["type"] == "multi_question":
-        st.markdown(f"**{quiz_data['main_question']}**")
+        st.markdown(f"**{quiz_data["main_question"]}**")
         sub_answers = {}
         col1, col2, col3 = st.columns(3)
         columns = [col1, col2, col3]
         for i, sub_question in enumerate(quiz_data["sub_questions"]):
             with columns[i % 3]:
-                st.markdown(f"**{sub_question['question']}**")
+                st.markdown(f"**{sub_question["question"]}**")
                 options = sub_question["options"]
                 min_value = 0
                 max_value = len(options) - 1
-                value = len(options) // 2 
+                value = 0
                 
                 selected_value = st.slider("", min_value=min_value, max_value=max_value, value=value, step=1, key=f"slider_{i}")
                 selected_option = options[selected_value]
@@ -300,13 +297,13 @@ if quiz_data:
                 sub_answers[sub_question["question"]] = selected_option
 
         if st.button("Submit Answers"):
-            st.session_state.user_answers.append({quiz_data['main_question']: sub_answers})
+            st.session_state.user_answers.append({quiz_data["main_question"]: sub_answers})
             st.session_state.question_index += 1
             st.session_state.quiz_data = get_question(st.session_state.question_index)
             st.rerun()
 
     elif quiz_data["type"] == "image":
-        st.markdown(f"**{quiz_data['question']}**")
+        st.markdown(f"**{quiz_data["question"]}**")
         clicked = clickable_images(
             quiz_data["image_urls"],
             titles=[choice for choice in quiz_data["choices"]],
@@ -316,15 +313,13 @@ if quiz_data:
 
         if clicked > -1:
             selected_answer = quiz_data["choices"][clicked]
-            st.session_state.user_answers.append({quiz_data['question']: selected_answer})
+            st.session_state.user_answers.append({quiz_data["question"]: selected_answer})
             st.session_state.question_index += 1
             st.session_state.quiz_data = get_question(st.session_state.question_index)
             st.rerun()
 
     elif quiz_data["type"] == "segment_selector":
-        st.markdown(f"**{quiz_data['question']}**")
-        
-        initialize_segment_selector()
+        st.markdown(f"**{quiz_data["question"]}**")
         
         if not st.session_state.segment_selector.is_complete:
             current_pair = st.session_state.segment_selector.get_next_pair()
@@ -365,6 +360,11 @@ if quiz_data:
                         st.session_state.question_index += 1
                         st.session_state.quiz_data = get_question(st.session_state.question_index)
                     st.rerun()
+
+
+
+
+
 
 else:
     st.markdown("Quiz completed. Here are your answers:")
