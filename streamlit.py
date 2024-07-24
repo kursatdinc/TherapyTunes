@@ -381,6 +381,7 @@ def run_quiz():
                                     st.session_state.question_index += 1
                                     st.session_state.quiz_data = get_question(st.session_state.question_index)
                                 st.rerun()
+                    
                     else:
                         winner, round_number = st.session_state.segment_selector.make_choice(1)
                         if winner:

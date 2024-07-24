@@ -51,7 +51,7 @@ df_survey = df_survey.rename(columns={"Frequency [Classical]": "frequency_instru
                                       "Frequency [EDM]": "frequency_dance","Frequency [Pop]": "frequency_pop","Frequency [Jazz]": "frequency_jazz",
                                       "Frequency [Metal]": "frequency_metal","Frequency [R&B]": "frequency_rnb", "Frequency [Rap]": "frequency_rap",
                                       "Frequency [Rock]": "frequency_rock", "Primary streaming service": "streaming_service", "Hours per day": "hours_per_day",
-                                      "While working": "while_working", "Fav genre": "fav_genre", "Music effects": "music_effects", "Age": "age",
+                                      "While working": "while_working", "Fav genre": "fav_genre", "Music effects": "music_effects", "Age": "age", "Instrumentalist": "instrumentalist",
                                       "Exploratory": "exploratory", "BPM": "tempo", "Anxiety":"anxiety", "Depression":"depression", "Insomnia":"insomnia", "OCD": "obsession"})
 
 ## Rename Variables
@@ -190,20 +190,29 @@ df_survey["tempo"] = df_survey["tempo"].clip(lower=40, upper=250)
 
 
 ###########
-# ASTYPE
+# ASTYPE & QCUT
 ###########
 
-df_survey["anxiety"] = df_survey["anxiety"].replace({7.5:7}) 
-df_survey["anxiety"] = df_survey["anxiety"].astype(int) 
-df_survey["depression"] = df_survey["depression"].replace({3.5:3}) 
+df_survey["anxiety"] = df_survey["anxiety"].replace({7.5:7})
+df_survey["anxiety"] = pd.qcut(df_survey["anxiety"], q=2, labels=[0, 1])
+df_survey["anxiety"] = df_survey["anxiety"].astype(int)
+
+df_survey["depression"] = df_survey["depression"].replace({3.5:3})
+df_survey["depression"] = pd.qcut(df_survey["depression"], q=2, labels=[0, 1])
 df_survey["depression"] = df_survey["depression"].astype(int) 
-df_survey["insomnia"] = df_survey["insomnia"].replace({3.5:3}) 
+
+df_survey["insomnia"] = df_survey["insomnia"].replace({3.5:3})
+df_survey["insomnia"] = pd.qcut(df_survey["insomnia"], q=2, labels=[0, 1])
 df_survey["insomnia"] = df_survey["insomnia"].astype(int) 
+
 df_survey["obsession"] = df_survey["obsession"].replace({8.5:9, 5.5:6}) 
+df_survey["obsession"] = pd.qcut(df_survey["obsession"], q=2, labels=[0, 1])
 df_survey["obsession"] = df_survey["obsession"].astype(int) 
+
 df_survey["age"] = df_survey["age"].astype(int)
 
 df_survey.info()
+
 
 ###########
 # EXPORT DATA
