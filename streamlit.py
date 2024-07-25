@@ -7,9 +7,17 @@ import random
 @st.cache_data
 def load_data():
     df = pd.read_csv("./datasets/spotify_final.csv")
-    df_segment = pd.read_csv("./datasets/segment.csv")
+    segment_11 = pd.read_csv("./segment_datasets/segment_11.csv")
+    segment_12 = pd.read_csv("./segment_datasets/segment_12.csv")
+    segment_13 = pd.read_csv("./segment_datasets/segment_13.csv")
+    segment_21 = pd.read_csv("./segment_datasets/segment_21.csv")
+    segment_22 = pd.read_csv("./segment_datasets/segment_22.csv")
+    segment_23 = pd.read_csv("./segment_datasets/segment_23.csv")
+    segment_31 = pd.read_csv("./segment_datasets/segment_31.csv")
+    segment_32 = pd.read_csv("./segment_datasets/segment_32.csv")
+    segment_33 = pd.read_csv("./segment_datasets/segment_33.csv")
 
-    return df, df_segment
+    return df, segment_11, segment_12, segment_13, segment_21, segment_22, segment_23, segment_31, segment_32, segment_33
 
 
 def load_css():
@@ -28,7 +36,7 @@ def spotify_player(track_id):
 class SegmentSelector:
     def __init__(self, dataset):
         self.dataset = dataset
-        self.segments = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+        self.segments = [11, 12, 13, 21, 22, 23, 31, 32, 33]
         random.shuffle(self.segments)
         
         self.current_segments = self.segments.copy()
@@ -247,15 +255,15 @@ def initialize_session_state():
         st.session_state.user_answers = []
     if "segment_selector" not in st.session_state:
         dataset = [
-            {"segment": 0, "track_id": df_segment[df_segment["segment"] == 0].sample(1)["track_id"].values[0]},
-            {"segment": 1, "track_id": df_segment[df_segment["segment"] == 1].sample(1)["track_id"].values[0]},
-            {"segment": 2, "track_id": df_segment[df_segment["segment"] == 2].sample(1)["track_id"].values[0]},
-            {"segment": 3, "track_id": df_segment[df_segment["segment"] == 3].sample(1)["track_id"].values[0]},
-            {"segment": 4, "track_id": df_segment[df_segment["segment"] == 4].sample(1)["track_id"].values[0]},
-            {"segment": 5, "track_id": df_segment[df_segment["segment"] == 5].sample(1)["track_id"].values[0]},
-            {"segment": 6, "track_id": df_segment[df_segment["segment"] == 6].sample(1)["track_id"].values[0]},
-            {"segment": 7, "track_id": df_segment[df_segment["segment"] == 7].sample(1)["track_id"].values[0]},
-            {"segment": 8, "track_id": df_segment[df_segment["segment"] == 8].sample(1)["track_id"].values[0]}
+            {"segment": 11, "track_id": segment_11.sample(1)["track_id"].values[0]},
+            {"segment": 12, "track_id": segment_12.sample(1)["track_id"].values[0]},
+            {"segment": 13, "track_id": segment_13.sample(1)["track_id"].values[0]},
+            {"segment": 21, "track_id": segment_21.sample(1)["track_id"].values[0]},
+            {"segment": 22, "track_id": segment_22.sample(1)["track_id"].values[0]},
+            {"segment": 23, "track_id": segment_23.sample(1)["track_id"].values[0]},
+            {"segment": 31, "track_id": segment_31.sample(1)["track_id"].values[0]},
+            {"segment": 32, "track_id": segment_32.sample(1)["track_id"].values[0]},
+            {"segment": 33, "track_id": segment_33.sample(1)["track_id"].values[0]}
         ]
         st.session_state.segment_selector = SegmentSelector(dataset)
 
@@ -419,7 +427,7 @@ def tab3_content():
 
 st.set_page_config(layout="wide")
 load_css()
-df, df_segment = load_data()
+df, segment_11, segment_12, segment_13, segment_21, segment_22, segment_23, segment_31, segment_32, segment_33 = load_data()
 
 
 tab1, tab2, tab3 = st.tabs(["Quiz", "Tab 2", "Tab 3"])
