@@ -1,12 +1,20 @@
 import pandas as pd
-from sklearn.preprocessing import LabelEncoder, StandardScaler
-from sklearn.model_selection import train_test_split
 import numpy as np
-from sklearn.metrics import cohen_kappa_score
-from catboost import CatBoostClassifier
 import matplotlib.pyplot as plt
 import seaborn as sns
-from sklearn.metrics import f1_score
+
+from sklearn.preprocessing import LabelEncoder, StandardScaler
+from sklearn.metrics import f1_score, accuracy_score, cohen_kappa_score, mean_squared_error
+from sklearn.model_selection import train_test_split, cross_val_score, cross_validate
+
+from sklearn.linear_model import LogisticRegression, LinearRegression
+from sklearn.neighbors import KNeighborsClassifier, KNeighborsRegressor
+from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
+from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
+from sklearn.svm import SVC, SVR
+from lightgbm import LGBMClassifier, LGBMRegressor
+from catboost import CatBoostClassifier, CatBoostRegressor
+from xgboost import XGBClassifier, XGBRegressor
 
 import warnings
 warnings.filterwarnings("ignore")
@@ -148,8 +156,12 @@ df_survey[num_cols] = scaler.fit_transform(df_survey[num_cols])
 ##############
 
 ###########
-# BASE MODEL
+# BASE MODELS
 ###########
+
+
+## ANXIETY ##
+
 
 y = df_survey["anxiety"]
 X = df_survey.drop(columns=["tempo", "anxiety", "depression", "insomnia", "obsession"], axis=1)
@@ -158,11 +170,31 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_
     
 ##############
 
+models = [("LR", LogisticRegression(random_state=42)),
+          ("KNN", KNeighborsClassifier()),
+          ("CART", DecisionTreeClassifier(random_state=42)),
+          ("RF", RandomForestClassifier(random_state=42)),
+          ("SVM", SVC(gamma="auto", random_state=42)),
+          ("XGB", XGBClassifier(random_state=42)),
+          ("LightGBM", LGBMClassifier(random_state=42, force_row_wise=True, verbose=-1)),
+          ("CatBoost", CatBoostClassifier(verbose=False, random_state=42))]
+
+for name, model in models:
+    cv_results = cross_validate(model, X, y, cv=10, scoring=["accuracy", "f1", "roc_auc", "precision", "recall"])
+    print(f"########## {name} ##########")
+    print(f"Accuracy: {round(cv_results['test_accuracy'].mean(), 4)}")
+    print(f"Auc: {round(cv_results['test_roc_auc'].mean(), 4)}")
+    print(f"Recall: {round(cv_results['test_recall'].mean(), 4)}")
+    print(f"Precision: {round(cv_results['test_precision'].mean(), 4)}")
+    print(f"F1: {round(cv_results['test_f1'].mean(), 4)}")
+
+##############
+
 def weighted_kappa(y_true, y_pred):
     return cohen_kappa_score(y_true, np.round(y_pred), weights="quadratic")
 
-model = CatBoostClassifier(iterations=1000,
-                           learning_rate=0.05,
+model = CatBoostClassifier(iterations=5000,
+                           learning_rate=0.02,
                            depth=6,
                            loss_function="MultiClass",
                            eval_metric="WKappa")
@@ -194,3 +226,94 @@ def plot_importance(model, features, dataframe, save=False):
         plt.savefig("importances.png")
 
 plot_importance(model, X, df_survey)
+
+
+## ANX, DEP, INS, OBS ##
+
+
+def weighted_kappa(y_true, y_pred):
+    return cohen_kappa_score(y_true, np.round(y_pred), weights="quadratic")
+
+def plot_importance(model, features, dataframe, save=False):
+    num = len(dataframe)
+    feature_imp = pd.DataFrame({"Value": model.feature_importances_, "Feature": features.columns})
+    plt.figure(figsize=(10, 10))
+    sns.set_theme(font_scale=1)
+    sns.barplot(x="Value", y="Feature", data=feature_imp.sort_values(by="Value", ascending=False)[0:num])
+    plt.title("Features")
+    plt.tight_layout()
+    plt.show()
+    if save:
+        plt.savefig("importances.png")
+
+
+for col in ["anxiety", "depression", "insomnia", "obsession"]:
+    
+    y = df_survey[col]
+    X = df_survey.drop(columns=["tempo", "anxiety", "depression", "insomnia", "obsession"], axis=1)
+
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+        
+    ##############
+
+    model = CatBoostClassifier(iterations=5000,
+                            learning_rate=0.02,
+                            depth=6,
+                            loss_function="MultiClass",
+                            eval_metric="WKappa")
+
+    model.fit(X_train, y_train,
+              eval_set=(X_test, y_test),
+              verbose=False)
+
+    y_pred = model.predict(X_test)
+
+    wkappa_score = weighted_kappa(y_test, y_pred)
+    print(f"Ağırlıklı Kappa Skoru: {wkappa_score}")
+
+    f1score = f1_score(y_test, y_pred)
+    print(f"F1 Score: {f1score}")
+
+    acc = accuracy_score(y_test, y_pred)
+    print(f"Accuracy: {acc}")
+
+
+## TEMPO ##
+
+
+y = df_survey["tempo"]
+X = df_survey.drop(columns=["tempo", "anxiety", "depression", "insomnia", "obsession"], axis=1)
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    
+##############
+
+models = [("LR", LinearRegression()),
+          ("KNN", KNeighborsRegressor()),
+          ("CART", DecisionTreeRegressor()),
+          ("RF", RandomForestRegressor()),
+          ("SVM", SVR()),
+          ("XGB", XGBRegressor()),
+          ("LightGBM", LGBMRegressor(force_row_wise=True, verbose=-1)),
+          ("CatBoost", CatBoostRegressor(verbose=False))]
+
+for name, model in models:
+    rmse = np.mean(np.sqrt(-cross_val_score(model, X, y, cv=5, scoring="neg_mean_squared_error")))
+    
+    print(f"RMSE: {round(rmse, 4)} ({name})")
+
+##############
+
+model = CatBoostRegressor(iterations=5000,
+                           learning_rate=0.02,
+                           depth=6)
+
+model.fit(X_train, y_train,
+          eval_set=(X_test, y_test),
+          verbose=100)
+
+y_pred = model.predict(X_test)
+
+rmse = np.sqrt(mean_squared_error(y_test, y_pred))
+    
+print(f"RMSE: {round(rmse, 4)} ({name})")
