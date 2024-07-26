@@ -1,4 +1,4 @@
-absl-py @ file:///home/conda/feedstock_root/build_artifacts/absl-py_1705494584803/work
+absl-py
 altair==5.3.0
 appnope @ file:///home/conda/feedstock_root/build_artifacts/appnope_1707233003401/work
 asttokens @ file:///home/conda/feedstock_root/build_artifacts/asttokens_1698341106958/work

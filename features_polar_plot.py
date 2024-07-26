@@ -2,11 +2,11 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-song_lyric_df = pd.read_csv("./datasets/spotify_data.csv")
+spoti_df = pd.read_csv("./datasets/spotify_final.csv")
 
 def polar_plot(df, track_id):
     labels = ["energy", "danceability", "acousticness", "valence",
-                 "speechiness", "liveness", "instrumentalness"]
+              "speechiness", "liveness", "instrumentalness"]
     
     features = df[df["track_id"] == track_id][labels]
 
@@ -28,4 +28,4 @@ def polar_plot(df, track_id):
 
     plt.show()
 
-polar_plot(song_lyric_df, "53QF56cjZA9RTuuMZDrSA6")
+polar_plot(spoti_df, "53QF56cjZA9RTuuMZDrSA6")
