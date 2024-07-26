@@ -432,6 +432,7 @@ def run_quiz():
         answer_dict["hustle"] = int(hustle_star)
         answer_dict["vibe"] = int(vibe_star)
         ###
+        st.markdown(answer_dict)
 
 
 def tab2_content():
