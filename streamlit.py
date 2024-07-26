@@ -425,7 +425,7 @@ def run_quiz():
         answer_dict["frequency_pop"] = answer_dict.pop("Pop")
         answer_dict["frequency_jazz"] = answer_dict.pop("Jazz")
         answer_dict["music_effects"] = answer_dict.pop("Is listening to music good for mental health?")
-        answer_dict["segment"] = answer_dict.pop("selected_segment")
+        answer_dict["pc_segment"] = answer_dict.pop("selected_segment")
         
         answer_dict["zodiac"] = answer_dict.pop("What's your zodiac sign?")
         hustle_star, vibe_star = get_star_ratings(answer_dict.get("zodiac"))
