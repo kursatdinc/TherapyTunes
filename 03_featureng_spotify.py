@@ -106,12 +106,12 @@ pca_fit = pca.fit_transform(pca_df)
 
 np.cumsum(pca.explained_variance_ratio_)
 
-pca_df_ =pd.DataFrame(pca_fit, columns=["PC1", "PC2"])
+pca_df_ =pd.DataFrame(pca_fit, columns=["pc1", "pc2"])
 
-pca_df_["PC1_Score"] = pd.qcut(pca_df_["PC1"], 3, labels=[3, 2, 1])
-pca_df_["PC2_Score"] = pd.qcut(pca_df_["PC2"], 3, labels=[3, 2, 1])
+pca_df_["pc1_score"] = pd.qcut(pca_df_["pc1"], 3, labels=[3, 2, 1])
+pca_df_["pc2_score"] = pd.qcut(pca_df_["pc2"], 3, labels=[3, 2, 1])
 
-pca_df_["PC_Segment"] = pca_df_["PC1_Score"].astype(str) + pca_df_["PC2_Score"].astype(str)
+pca_df_["pc_segment"] = pca_df_["pc1_score"].astype(str) + pca_df_["pc2_score"].astype(str)
 
 ###########
 
@@ -122,39 +122,39 @@ final_df.head()
 # SEGMENT EXPORTS
 ###########
 
-df_list_11 = final_df[final_df["PC_Segment"] == "11"].sort_values("popularity", ascending=False).iloc[:100]
+df_list_11 = final_df[final_df["pc_segment"] == "11"].sort_values("popularity", ascending=False).iloc[:100]
 df_list_11 = df_list_11[["artist_name", "track_name", "track_id"]].reset_index(drop=True)
 df_list_11.to_csv("./segment_datasets/segment_11.csv", index=False)
 
-df_list_12 = final_df[final_df["PC_Segment"] == "12"].sort_values("popularity", ascending=False).iloc[:100]
+df_list_12 = final_df[final_df["pc_segment"] == "12"].sort_values("popularity", ascending=False).iloc[:100]
 df_list_12 = df_list_12[["artist_name", "track_name", "track_id"]].reset_index(drop=True)
 df_list_12.to_csv("./segment_datasets/segment_12.csv", index=False)
 
-df_list_13 = final_df[final_df["PC_Segment"] == "13"].sort_values("popularity", ascending=False).iloc[:100]
+df_list_13 = final_df[final_df["pc_segment"] == "13"].sort_values("popularity", ascending=False).iloc[:100]
 df_list_13 = df_list_13[["artist_name", "track_name", "track_id"]].reset_index(drop=True)
 df_list_13.to_csv("./segment_datasets/segment_13.csv", index=False)
 
-df_list_21 = final_df[final_df["PC_Segment"] == "21"].sort_values("popularity", ascending=False).iloc[:100]
+df_list_21 = final_df[final_df["pc_segment"] == "21"].sort_values("popularity", ascending=False).iloc[:100]
 df_list_21 = df_list_21[["artist_name", "track_name", "track_id"]].reset_index(drop=True)
 df_list_21.to_csv("./segment_datasets/segment_21.csv", index=False)
 
-df_list_22 = final_df[final_df["PC_Segment"] == "22"].sort_values("popularity", ascending=False).iloc[:100]
+df_list_22 = final_df[final_df["pc_segment"] == "22"].sort_values("popularity", ascending=False).iloc[:100]
 df_list_22 = df_list_22[["artist_name", "track_name", "track_id"]].reset_index(drop=True)
 df_list_22.to_csv("./segment_datasets/segment_22.csv", index=False)
 
-df_list_23 = final_df[final_df["PC_Segment"] == "23"].sort_values("popularity", ascending=False).iloc[:100]
+df_list_23 = final_df[final_df["pc_segment"] == "23"].sort_values("popularity", ascending=False).iloc[:100]
 df_list_23 = df_list_23[["artist_name", "track_name", "track_id"]].reset_index(drop=True)
 df_list_23.to_csv("./segment_datasets/segment_23.csv", index=False)
 
-df_list_31 = final_df[final_df["PC_Segment"] == "31"].sort_values("popularity", ascending=False).iloc[:100]
+df_list_31 = final_df[final_df["pc_segment"] == "31"].sort_values("popularity", ascending=False).iloc[:100]
 df_list_31 = df_list_31[["artist_name", "track_name", "track_id"]].reset_index(drop=True)
 df_list_31.to_csv("./segment_datasets/segment_31.csv", index=False)
 
-df_list_32 = final_df[final_df["PC_Segment"] == "32"].sort_values("popularity", ascending=False).iloc[:100]
+df_list_32 = final_df[final_df["pc_segment"] == "32"].sort_values("popularity", ascending=False).iloc[:100]
 df_list_32 = df_list_32[["artist_name", "track_name", "track_id"]].reset_index(drop=True)
 df_list_32.to_csv("./segment_datasets/segment_32.csv", index=False)
 
-df_list_33 = final_df[final_df["PC_Segment"] == "33"].sort_values("popularity", ascending=False).iloc[:100]
+df_list_33 = final_df[final_df["pc_segment"] == "33"].sort_values("popularity", ascending=False).iloc[:100]
 df_list_33 = df_list_33[["artist_name", "track_name", "track_id"]].reset_index(drop=True)
 df_list_33.to_csv("./segment_datasets/segment_33.csv", index=False)
 
@@ -162,6 +162,27 @@ df_list_33.to_csv("./segment_datasets/segment_33.csv", index=False)
 # FEATURE EXTRACTION
 ###########
 
+final_df = final_df.drop(columns=["pc1", "pc2", "pc1_score", "pc2_score"])
+
+## ANXIETY INDEX
+
+final_df["anxiety_index"] = final_df["danceability"]*5 + final_df["loudness"]/10 + final_df["tempo"]/20 - final_df["acousticness"]*2
+final_df["anxiety_index"] = pd.qcut(final_df["anxiety_index"], 2, labels=[1, 0])
+
+## DEPRESSION INDEX
+
+final_df["depression_index"] = 10 - final_df["valence"]*7 + final_df["energy"]*3 + (1-final_df["mode"])*2
+final_df["depression_index"] = pd.qcut(final_df["depression_index"], 2, labels=[1, 0])
+
+## INSOMNIA INDEX
+
+final_df["insomnia_index"] = (1 - final_df["acousticness"])*3 + final_df["energy"]*4 + final_df["loudness"]/15 + (1 - final_df["instrumentalness"])*3
+final_df["insomnia_index"] = pd.qcut(final_df["insomnia_index"], 2, labels=[1, 0])
+
+## OBSESSION INDEX
+
+final_df["obsession_index"] = final_df["energy"]*5 + final_df["loudness"]/10 + (1 - final_df["valence"])*5
+final_df["obsession_index"] = pd.qcut(final_df["insomnia_index"], 2, labels=[1, 0])
 
 ###########
 # ENCODING & SCALING

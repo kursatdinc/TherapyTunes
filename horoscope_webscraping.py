@@ -22,15 +22,10 @@ def get_star_ratings(sign, date="today"):
             stars = len(highlighted_stars)
             # ratings[category] = f"{stars}/5"
             ratings[category] = f"{stars}"
+            
+            # sex_star = int(ratings.get("sex"))
+            hustle_star =ratings.get("hustle")
+            vibe_star = ratings.get("vibe")
+            # success_star = int(rating.get("success"))
     
-    return ratings
-
-rating  = get_star_ratings("gemini")
-
-int(rating.get("sex"))
-int(rating.get("hustle"))
-int(rating.get("vibe"))
-int(rating.get("success"))
-
-for sign in sign_list:
-    print(sign, get_star_ratings(sign))
+    return hustle_star, vibe_star

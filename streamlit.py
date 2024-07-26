@@ -3,6 +3,7 @@ from st_clickable_images import clickable_images
 import streamlit.components.v1 as components
 import pandas as pd
 import random
+from horoscope_webscraping import get_star_ratings
 
 @st.cache_data
 def load_data():
@@ -399,16 +400,38 @@ def run_quiz():
                         st.rerun()
 
     else:
-        st.markdown("Quiz completed. Here are your answers:")
+        answer_dict ={}
         for answer in st.session_state.user_answers:
             for question, response in answer.items():
-                st.write(f"**{question}**")
                 if isinstance(response, dict):
                     for sub_q, sub_r in response.items():
-                        st.write(f"  {sub_q}: {sub_r}")
+                        answer_dict[sub_q] = sub_r
                 else:
-                    st.write(f"  {response}")
-            st.write("---")
+                    answer_dict[question] = response
+        ###
+        answer_dict["age"] = answer_dict.pop("Enter your age.")
+        answer_dict["hours_per_day"] = answer_dict.pop("How many hours a day do you listen to music?")
+        answer_dict["streaming_service"] = answer_dict.pop("Select the music platform that you use?")
+        answer_dict["while_working"] = answer_dict.pop("Do you listen to music while working?")
+        answer_dict["fav_genre"] = answer_dict.pop("What's your favorite music genre?")
+        answer_dict["exploratory"] = answer_dict.pop("Are you open to listening to new music?")
+        answer_dict["frequency_dance"] = answer_dict.pop("Dance")
+        answer_dict["frequency_instrumental"] = answer_dict.pop("Instrumental")
+        answer_dict["frequency_traditional"] = answer_dict.pop("Traditional")
+        answer_dict["frequency_rap"] = answer_dict.pop("Rap")
+        answer_dict["frequency_rnb"] = answer_dict.pop("R&B")
+        answer_dict["frequency_rock"] = answer_dict.pop("Rock")
+        answer_dict["frequency_metal"] = answer_dict.pop("Metal")
+        answer_dict["frequency_pop"] = answer_dict.pop("Pop")
+        answer_dict["frequency_jazz"] = answer_dict.pop("Jazz")
+        answer_dict["music_effects"] = answer_dict.pop("Is listening to music good for mental health?")
+        answer_dict["segment"] = answer_dict.pop("selected_segment")
+        
+        answer_dict["zodiac"] = answer_dict.pop("What's your zodiac sign?")
+        hustle_star, vibe_star = get_star_ratings(answer_dict.get("zodiac"))
+        answer_dict["hustle"] = int(hustle_star)
+        answer_dict["vibe"] = int(vibe_star)
+        ###
 
 
 def tab2_content():
@@ -425,7 +448,7 @@ def tab3_content():
 ###############
 
 
-st.set_page_config(layout="wide")
+st.set_page_config(layout="wide", page_title="Therapy Tunes", page_icon="🎶")
 load_css()
 df, segment_11, segment_12, segment_13, segment_21, segment_22, segment_23, segment_31, segment_32, segment_33 = load_data()
 
