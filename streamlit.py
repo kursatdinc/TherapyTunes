@@ -143,6 +143,13 @@ questions = [
         "image_urls": ["https://i.ibb.co/nw72Gr3/013-check.png",
                        "https://i.ibb.co/6ZTNRC8/014-cancel.png"]
     },
+        {
+        "type": "image_2",
+        "question": "Do you play any musical instrument?",
+        "choices": ["Yes", "No"],
+        "image_urls": ["https://i.ibb.co/nw72Gr3/013-check.png",
+                       "https://i.ibb.co/6ZTNRC8/014-cancel.png"]
+    },
     {
         "type": "image_3",
         "question": "What's your favorite music genre?",
@@ -413,6 +420,7 @@ def run_quiz():
         answer_dict["hours_per_day"] = answer_dict.pop("How many hours a day do you listen to music?")
         answer_dict["streaming_service"] = answer_dict.pop("Select the music platform that you use?")
         answer_dict["while_working"] = answer_dict.pop("Do you listen to music while working?")
+        answer_dict["instrumentalist"] = answer_dict.pop("Do you play any musical instrument?")
         answer_dict["fav_genre"] = answer_dict.pop("What's your favorite music genre?")
         answer_dict["exploratory"] = answer_dict.pop("Are you open to listening to new music?")
         answer_dict["frequency_dance"] = answer_dict.pop("Dance")
@@ -433,6 +441,55 @@ def run_quiz():
         answer_dict["vibe"] = int(vibe_star)
         ###
         st.markdown(answer_dict)
+
+        mental_input = {"age": answer_dict["age"],
+                        "streaming_service": answer_dict["streaming_service"], 
+                        "hours_per_day": answer_dict["hours_per_day"],
+                        "while_working": answer_dict["while_working"],
+                        "instrumentalist": answer_dict["instrumentalist"],
+                        "fav_genre": answer_dict["fav_genre"],
+                        "exploratory": answer_dict["exploratory"],
+                        "frequency_instrumental": answer_dict["frequency_instrumental"],
+                        "frequency_traditional": answer_dict["frequency_traditional"],
+                        "frequency_dance": answer_dict["frequency_dance"],
+                        "frequency_jazz": answer_dict["frequency_jazz"],
+                        "frequency_metal": answer_dict["frequency_metal"],
+                        "frequency_pop": answer_dict["frequency_pop"],
+                        "frequency_rnb": answer_dict["frequency_rnb"],
+                        "frequency_rap": answer_dict["frequency_rap"],
+                        "frequency_rock": answer_dict["frequency_rock"],
+                        "music_effects": answer_dict["music_effects"]}
+        
+        mental_input_df = pd.DataFrame(data=mental_input, index=[0])
+
+        def mental_feature_eng(df):
+            pass
+
+        mental_feature_eng(mental_input_df)
+
+        # anx_model.pkl
+        # dep_model.pkl
+        # ins_model.pkl
+        # obs_model.pkl
+        # tempo_model.pkl
+
+        ### SHOW MENTAL ###
+
+        spoti_input = {}
+
+        spoti_input_df = pd.DataFrame(data=spoti_input, index=[0])
+
+        def spoti_feature_eng(df):
+            pass
+
+        spoti_feature_eng(spoti_input_df)
+
+        # spoti_model.pkl
+
+        # recom_pool = df[df["cluster"] = spoti_model_predict and df["pc_segment"] = answer_dict.get("pc_segment") and df["genre"] = answer_dict.get("fav_genre")].iloc[:100]
+
+        # samples = recom_pool.sample(3)["track_id"]
+
 
 
 def tab2_content():
