@@ -12,15 +12,12 @@ html, body, [class*="css"] {
     background-color: #E8E8E8;
 }
 
-h1, h2, h3, h4, h5, h6 {
+
+h1, h2, h3, h4, h5, h6, p {
     font-family: 'Quicksand', sans-serif;
     color: #091747;
 }
 
-.markdown-text-container p {
-    font-family: 'Quicksand', sans-serif;
-    color: #091747;
-}
 
 button {
     font-family: 'Quicksand', sans-serif;

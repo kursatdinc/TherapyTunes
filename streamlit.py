@@ -7,6 +7,7 @@ import random
 import joblib
 from horoscope_webscraping import get_star_ratings
 
+
 @st.cache_data
 def load_data():
     df = pd.read_csv("./datasets/spotify_final.csv")
@@ -280,7 +281,6 @@ def initialize_session_state():
             st.session_state.recommendations = []
     
 
-
 def run_quiz():
     quiz_data = st.session_state.quiz_data
 
@@ -308,7 +308,7 @@ def run_quiz():
                     st.markdown(f"**{sub_question['question']}**")
                     options = sub_question["options"]
                     
-                    selected_option = st.select_slider("", options=options, key=f"slider_{i}")
+                    selected_option = st.select_slider(label="question", label_visibility="hidden", options=options, key=f"slider_{i}")
                     sub_answers[sub_question["question"]] = selected_option
 
             if st.button("Submit", key="submit_answers"):
@@ -454,20 +454,108 @@ def run_quiz():
 
     
 def analysis_content():
-    st.title("Tab 2")
-    st.write("This is the content for Tab 2. You can add your desired content here.")
+    st.divider()
+
+    col1, col2, col3 = st.columns([0.7,1,0.7])
+
+    with col2:
+        options_analysis = option_menu(None, ["Mental Survey", "Spotify"], 
+                        icons=["card-checklist", "spotify"], 
+                        menu_icon="cast", default_index=0, orientation="horizontal",
+                        styles={"container": {"padding": "0!important", 
+                                                "backgroundColor": "#E8E8E8",
+                                                "width": "100%",
+                                                "max-width": "100%"}})
+
+
+    if options_analysis == "Mental Survey":
+        st.write("Mental Survey Analysis")
+
+    elif options_analysis == "Spotify":
+        st.write("Spotify Analysis")
 
 
 def team_content():
-    st.title("Tab 3")
-    st.write("This is the content for Tab 3. You can add your desired content here.")
+    st.divider()
+    
+    # CSS for centering subheaders
+    st.markdown("""
+    <style>
+    .centered-subheader {
+        text-align: center;
+        font-weight: bold;
+        font-size: 1.5em;
+        margin-bottom: 1em;
+    }
+    .social-icons {
+        display: flex;
+        justify-content: center;
+        padding: 10px;
+    }
+    .social-icons a {
+        color: #0e1117;
+        text-decoration: none;
+        margin: 0 10px;
+        font-size: 24px;
+    }
+    </style>
+    """, unsafe_allow_html=True)
 
+    col1, col2, col3 = st.columns([1, 1, 1])
 
+    with col1:
+        st.markdown('<p class="centered-subheader">Büşra Sürücü</p>', unsafe_allow_html=True)
+        st.write("Veri Bilimci")
+        st.write("Python ve veri analizi konularında uzman.")
+        st.divider()
+        st.markdown("""
+        <div class="social-icons">
+            <a href="https://linkedin.com/in/busrasurucu" target="_blank" title="LinkedIn">
+                <i class="fab fa-linkedin"></i>
+            </a>
+            <a href="https://github.com/busrasurucu" target="_blank" title="GitHub">
+                <i class="fab fa-github"></i>
+            </a>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with col2:
+        st.markdown('<p class="centered-subheader">Hilal Alpak</p>', unsafe_allow_html=True)
+        st.write("Veri Bilimci")
+        st.write("Python ve veri analizi konularında uzman.")
+        st.divider()
+        st.markdown("""
+        <div class="social-icons">
+            <a href="https://linkedin.com/in/hilal-alpak" target="_blank" title="LinkedIn">
+                <i class="fab fa-linkedin"></i>
+            </a>
+            <a href="https://github.com/hilalalpak" target="_blank" title="GitHub">
+                <i class="fab fa-github"></i>
+            </a>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with col3:
+        st.markdown('<p class="centered-subheader">Kürşat Dinç</p>', unsafe_allow_html=True)
+        st.write("Veri Bilimci")
+        st.write("Python ve veri analizi konularında uzman.")
+        st.divider()
+        st.markdown("""
+        <div class="social-icons">
+            <a href="https://linkedin.com/in/kursatdinc" target="_blank" title="LinkedIn">
+                <i class="fab fa-linkedin"></i>
+            </a>
+            <a href="https://github.com/kursatdinc" target="_blank" title="GitHub">
+                <i class="fab fa-github"></i>
+            </a>
+        </div>
+        """, unsafe_allow_html=True)
 ###############
 ###############
 
 
 st.set_page_config(layout="wide", page_title="Therapy Tunes", page_icon="🎶")
+st.markdown('<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">', unsafe_allow_html=True)
 load_css()
 df, segment_11, segment_12, segment_13, segment_21, segment_22, segment_23, segment_31, segment_32, segment_33 = load_data()
 col1, col2, col3 = st.columns([0.8,1,0.7])
