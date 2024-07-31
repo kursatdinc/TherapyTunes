@@ -146,13 +146,6 @@ questions = [
         "image_urls": ["https://i.ibb.co/nw72Gr3/013-check.png",
                        "https://i.ibb.co/6ZTNRC8/014-cancel.png"]
     },
-        {
-        "type": "image_2",
-        "question": "Do You Play Any Musical Instrument ?",
-        "choices": ["Yes", "No"],
-        "image_urls": ["https://i.ibb.co/nw72Gr3/013-check.png",
-                       "https://i.ibb.co/6ZTNRC8/014-cancel.png"]
-    },
     {
         "type": "image_3",
         "question": "What's Your Favorite Music Genre ?",
@@ -167,6 +160,13 @@ questions = [
                        "https://i.ibb.co/ypbW2vF/28-jazz.png",
                        "https://i.ibb.co/R4QNXZg/29-traditional.png",
                        "https://i.ibb.co/MGYKKgv/30-rnb.png"]
+    },
+    {
+        "type": "image_2",
+        "question": "Do You Play Any Musical Instrument ?",
+        "choices": ["Yes", "No"],
+        "image_urls": ["https://i.ibb.co/nw72Gr3/013-check.png",
+                       "https://i.ibb.co/6ZTNRC8/014-cancel.png"]
     },
     {
         "type": "image_2",
@@ -324,15 +324,15 @@ def run_quiz():
                 quiz_data["image_urls"],
                 titles=[choice for choice in quiz_data["choices"]],
                 div_style={"display": "grid",
-                        "grid-template-columns": "repeat(2, 1fr)",
-                        "gap": "10px",
-                        "justify-content": "center",
-                        "background-color": "#E8E8E8",
-                        "padding": "20px"},
+                           "grid-template-columns": "repeat(2, 1fr)",
+                           "gap": "10px",
+                           "justify-content": "center",
+                           "background-color": "#E8E8E8",
+                           "padding": "20px"},
                 img_style={"width": "150px",
-                        "height": "150px",
-                        "object-fit": "cover",
-                        "margin": "auto"})
+                           "height": "150px",
+                           "object-fit": "cover",
+                           "margin": "auto"})
 
             if clicked > -1:
                 selected_answer = quiz_data["choices"][clicked]
@@ -424,13 +424,13 @@ def run_quiz():
                 else:
                     answer_dict[question] = response
         ###
-        answer_dict["age"] = answer_dict.pop("Enter your age.")
-        answer_dict["hours_per_day"] = answer_dict.pop("How many hours a day do you listen to music?")
-        answer_dict["streaming_service"] = answer_dict.pop("Select the music platform that you use?")
-        answer_dict["while_working"] = answer_dict.pop("Do you listen to music while working?")
-        answer_dict["instrumentalist"] = answer_dict.pop("Do you play any musical instrument?")
-        answer_dict["fav_genre"] = answer_dict.pop("What's your favorite music genre?")
-        answer_dict["exploratory"] = answer_dict.pop("Are you open to listening to new music?")
+        answer_dict["age"] = answer_dict.pop("Please Enter Your Age")
+        answer_dict["hours_per_day"] = answer_dict.pop("How Many Hours Listen to Music in a Day ?")
+        answer_dict["streaming_service"] = answer_dict.pop("Please Select The Music Platform That You Use")
+        answer_dict["while_working"] = answer_dict.pop("Do You Listen to Music While Working ?")
+        answer_dict["instrumentalist"] = answer_dict.pop("Do You Play Any Musical Instrument ?")
+        answer_dict["fav_genre"] = answer_dict.pop("What's Your Favorite Music Genre ?")
+        answer_dict["exploratory"] = answer_dict.pop("Are You Open to Listening to New Music ?")
         answer_dict["frequency_dance"] = answer_dict.pop("Dance")
         answer_dict["frequency_instrumental"] = answer_dict.pop("Instrumental")
         answer_dict["frequency_traditional"] = answer_dict.pop("Traditional")
@@ -440,10 +440,10 @@ def run_quiz():
         answer_dict["frequency_metal"] = answer_dict.pop("Metal")
         answer_dict["frequency_pop"] = answer_dict.pop("Pop")
         answer_dict["frequency_jazz"] = answer_dict.pop("Jazz")
-        answer_dict["music_effects"] = answer_dict.pop("Is listening to music good for mental health?")
+        answer_dict["music_effects"] = answer_dict.pop("Is Listening to Music Good For Your Mental Health ?")
         answer_dict["pc_segment"] = answer_dict.pop("selected_segment")
         
-        answer_dict["zodiac"] = answer_dict.pop("What's your zodiac sign?")
+        answer_dict["zodiac"] = answer_dict.pop("What's Your Zodiac Sign ?")
         hustle_star, vibe_star = get_star_ratings(answer_dict.get("zodiac"))
         answer_dict["hustle"] = int(hustle_star)
         answer_dict["vibe"] = int(vibe_star)
