@@ -6,6 +6,7 @@ import pandas as pd
 import random
 import joblib
 from horoscope_webscraping import get_star_ratings
+from features_polar_plot import polar_plot
 
 
 @st.cache_data
@@ -473,6 +474,12 @@ def analysis_content():
 
     elif options_analysis == "Spotify":
         st.write("Spotify Analysis")
+        col1, col2, col3 = st.columns([1, 1, 1])
+        with col3:
+            selected_genre = st.selectbox("Genre", ["Dance", "Instrumental", "Rap",
+                                                    "Rock", "Metal", "Pop",
+                                                    "Jazz", "Traditional", "R&B"])
+            polar_plot(df, selected_genre)
 
 
 def team_content():

@@ -1,31 +1,40 @@
-import pandas as pd
+import streamlit as st
+import plotly.graph_objects as go
 import numpy as np
-import matplotlib.pyplot as plt
 
-spoti_df = pd.read_csv("./datasets/spotify_final.csv")
 
-def polar_plot(df, track_id):
+def polar_plot(df, genre):
     labels = ["energy", "danceability", "acousticness", "valence",
               "speechiness", "liveness", "instrumentalness"]
     
-    features = df[df["track_id"] == track_id][labels]
+    features = df[df["genre"] == genre][labels].mean()
 
-    stats = features.iloc[0].to_list()
+    stats = features.to_list()
 
-    angles = np.linspace(0, 2 * np.pi, len(labels), endpoint=False).tolist()
+    angles = np.linspace(0, 360, len(labels), endpoint=False)
 
     stats += stats[:1]
-    angles += angles[:1]
+    angles = np.append(angles, angles[0])
 
-    fig, ax = plt.subplots(figsize=(6, 6), subplot_kw=dict(polar=True))
+    fig = go.Figure()
 
-    ax.fill(angles, stats, color="grey", alpha=0.25)
-    ax.plot(angles, stats, "o-", color="grey", linewidth=2)
+    fig.add_trace(go.Scatterpolar(r = stats,
+                                  theta = angles,
+                                  fill = "toself",
+                                  fillcolor = "rgba(255, 0, 0, 0.3)",
+                                  line = dict(color = "red"),
+                                  name = genre))
 
-    ax.set_yticklabels([])
-    ax.set_xticks(angles[:-1])
-    ax.set_xticklabels(labels)
+    fig.update_layout(polar = dict(radialaxis = dict(visible = True,
+                                                     range = [0, 1],
+                                                     showticklabels = False,
+                                                     ticks = "",),
+                                   bgcolor = "#E8E8E8",),
+                      showlegend = False,
+                      paper_bgcolor = "#E8E8E8")
 
-    plt.show()
+    fig.update_polars(angularaxis = dict(ticktext = [f"<b>{label.capitalize()}</b>" for label in labels],
+                                         tickvals = angles[:-1],
+                                         tickfont = dict(size=12)))
 
-polar_plot(spoti_df, "53QF56cjZA9RTuuMZDrSA6")
+    st.plotly_chart(fig)
