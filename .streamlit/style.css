@@ -1,9 +1,28 @@
-body {
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap');
+
+html, body, [class*="css"] {
+    font-family: 'Quicksand', sans-serif; 
+    font-size: 18px;
+    font-weight: 500;
+    color: #091747;
     background-color: #E8E8E8;
-    background-image: url();
-    background-size: cover;
 }
 
 .stApp {
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: #E8E8E8;
 }
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Quicksand', sans-serif;
+    color: #091747;
+}
+
+.markdown-text-container p {
+    font-family: 'Quicksand', sans-serif;
+    color: #091747;
+}
+
+button {
+    font-family: 'Quicksand', sans-serif;
+    color: #ffffff;
+    background-color: #091747;

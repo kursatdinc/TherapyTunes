@@ -1,8 +1,10 @@
 import streamlit as st
 from st_clickable_images import clickable_images
 import streamlit.components.v1 as components
+from streamlit_option_menu import option_menu
 import pandas as pd
 import random
+import joblib
 from horoscope_webscraping import get_star_ratings
 
 @st.cache_data
@@ -115,21 +117,21 @@ class SegmentSelector:
 questions = [
     {
         "type": "slider",
-        "question": "Enter your age.",
+        "question": "Please Enter Your Age",
         "min_value": 1,
         "max_value": 100,
         "step":1
     },
     {
         "type": "slider",
-        "question":"How many hours a day do you listen to music?",
+        "question":"How Many Hours Listen to Music in a Day ?",
         "min_value": 0.0,
         "max_value": 24.0,
         "step": 0.25
     },
     {
         "type": "image_2",
-        "question": "Select the music platform that you use?",
+        "question": "Please Select The Music Platform That You Use",
         "choices": ["Spotify", "YouTube Music", "Apple Music", "Other"],
         "image_urls": ["https://i.ibb.co/60kxcRC/015-spotify.png",
                        "https://i.ibb.co/sJw4ymT/016-music.png",
@@ -138,21 +140,21 @@ questions = [
     },
     {
         "type": "image_2",
-        "question": "Do you listen to music while working?",
+        "question": "Do You Listen to Music While Working ?",
         "choices": ["Yes", "No"],
         "image_urls": ["https://i.ibb.co/nw72Gr3/013-check.png",
                        "https://i.ibb.co/6ZTNRC8/014-cancel.png"]
     },
         {
         "type": "image_2",
-        "question": "Do you play any musical instrument?",
+        "question": "Do You Play Any Musical Instrument ?",
         "choices": ["Yes", "No"],
         "image_urls": ["https://i.ibb.co/nw72Gr3/013-check.png",
                        "https://i.ibb.co/6ZTNRC8/014-cancel.png"]
     },
     {
         "type": "image_3",
-        "question": "What's your favorite music genre?",
+        "question": "What's Your Favorite Music Genre ?",
         "choices": ["Dance", "Instrumental", "Rap", "Rock",
                     "Metal", "Pop", "Jazz", "Traditional", "R&B"],
         "image_urls": ["https://i.ibb.co/qmgbg2M/022-dance.png",
@@ -167,14 +169,14 @@ questions = [
     },
     {
         "type": "image_2",
-        "question": "Are you open to listening to new music?",
+        "question": "Are You Open to Listening to New Music ?",
         "choices": ["Yes", "No"],
         "image_urls": ["https://i.ibb.co/nw72Gr3/013-check.png",
                        "https://i.ibb.co/6ZTNRC8/014-cancel.png"]
     },
     {
         "type": "multi_question",
-        "main_question": "Select the frequency of listening to music genres?",
+        "main_question": "Please Select the Frequency of Listening to Music Genres",
         "sub_questions": [
             {
                 "question": "Dance",
@@ -216,7 +218,7 @@ questions = [
     },
     {
         "type": "image_3",
-        "question": "Is listening to music good for mental health?",
+        "question": "Is Listening to Music Good For Your Mental Health ?",
         "choices": ["Improve", "No Effect", "Worsen"],
         "image_urls": ["https://i.ibb.co/sQqjgbt/019-thumb-up.png",
                        "https://i.ibb.co/m5RLhMt/021-line.png",
@@ -224,7 +226,7 @@ questions = [
     },
     {
         "type": "image_3",
-        "question": "What's your zodiac sign?",
+        "question": "What's Your Zodiac Sign ?",
         "choices": ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra",
                     "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"],
         "image_urls": ["https://i.ibb.co/XV3GDzw/001-aries.png",
@@ -242,7 +244,7 @@ questions = [
     },
     {
         "type": "segment_selector",
-        "question": "Which One?",
+        "question": "Which One ?",
     }
 ]
 
@@ -274,6 +276,9 @@ def initialize_session_state():
             {"segment": 33, "track_id": segment_33.sample(1)["track_id"].values[0]}
         ]
         st.session_state.segment_selector = SegmentSelector(dataset)
+    if "recommendations" not in st.session_state:
+            st.session_state.recommendations = []
+    
 
 
 def run_quiz():
@@ -281,43 +286,40 @@ def run_quiz():
 
     if quiz_data:
         if quiz_data["type"] == "slider":
-            st.markdown(f"**{quiz_data['question']}**")
-            slider_value = st.slider("Your answer", min_value=quiz_data["min_value"], max_value=quiz_data["max_value"], step=quiz_data["step"])
+            st.subheader(f"**{quiz_data['question']}**")
+            st.divider()
+            slider_value = st.slider(label="question", label_visibility="hidden",  min_value=quiz_data["min_value"], max_value=quiz_data["max_value"], step=quiz_data["step"])
             
-            if st.button("Submit"):
+            if st.button("Submit", key="submit"):
                 st.session_state.user_answers.append({quiz_data["question"]: slider_value})
                 st.session_state.question_index += 1
                 st.session_state.quiz_data = get_question(st.session_state.question_index)
                 st.rerun()
 
         elif quiz_data["type"] == "multi_question":
-            st.markdown(f"**{quiz_data['main_question']}**")
+            st.subheader(f"**{quiz_data['main_question']}**")
+            st.divider()
             sub_answers = {}
-            col1, col2, col3 = st.columns(3)
+            col1, empty_col_1, col2, empty_col_2, col3 = st.columns([1, 0.2, 1, 0.2, 1])
+            
             columns = [col1, col2, col3]
             for i, sub_question in enumerate(quiz_data["sub_questions"]):
                 with columns[i % 3]:
                     st.markdown(f"**{sub_question['question']}**")
                     options = sub_question["options"]
-                    min_value = 0
-                    max_value = len(options) - 1
-                    value = 0
                     
-                    selected_value = st.slider("", min_value=min_value, max_value=max_value, value=value, step=1, key=f"slider_{i}")
-                    selected_option = options[selected_value]
-                    
-                    st.write(f"Selected: {selected_option}")
-                    
+                    selected_option = st.select_slider("", options=options, key=f"slider_{i}")
                     sub_answers[sub_question["question"]] = selected_option
 
-            if st.button("Submit Answers"):
+            if st.button("Submit", key="submit_answers"):
                 st.session_state.user_answers.append({quiz_data["main_question"]: sub_answers})
                 st.session_state.question_index += 1
                 st.session_state.quiz_data = get_question(st.session_state.question_index)
                 st.rerun()
 
         elif quiz_data["type"] == "image_2":
-            st.markdown(f"**{quiz_data['question']}**")
+            st.subheader(f"**{quiz_data['question']}**")
+            st.divider()
             clicked = clickable_images(
                 quiz_data["image_urls"],
                 titles=[choice for choice in quiz_data["choices"]],
@@ -340,7 +342,8 @@ def run_quiz():
                 st.rerun()
 
         elif quiz_data["type"] == "image_3":
-            st.markdown(f"**{quiz_data['question']}**")
+            st.subheader(f"**{quiz_data['question']}**")
+            st.divider()
             clicked = clickable_images(
                 quiz_data["image_urls"],
                 titles=[choice for choice in quiz_data["choices"]],
@@ -363,40 +366,45 @@ def run_quiz():
                 st.rerun()
 
         elif quiz_data["type"] == "segment_selector":
-            st.markdown(f"**{quiz_data['question']}**")
+            st.subheader(f"**{quiz_data['question']}**")
+            st.divider()
             
             if not st.session_state.segment_selector.is_complete:
                 current_pair = st.session_state.segment_selector.get_next_pair()
                 
                 if current_pair:
-                    col1, col2 = st.columns(2)
+                    emptycol1, col1, col2, emptycol2= st.columns([1.1,1,1,1])
                     
                     with col1:
                         segment1 = current_pair[0]
                         song1 = st.session_state.segment_selector.get_random_song(segment1)
                         spotify_player(song1["track_id"])
-                        
-                        if st.button("Select", key="select_1"):
-                            winner, round_number = st.session_state.segment_selector.make_choice(1)
-                            if winner:
-                                st.session_state.user_answers.append({"selected_segment": winner})
-                                st.session_state.question_index += 1
-                                st.session_state.quiz_data = get_question(st.session_state.question_index)
-                            st.rerun()
+                        empty1, col_button, empty2= st.columns([1,1,1])
+
+                        with col_button:
+                            if st.button("Select", key="select_1"):
+                                winner, round_number = st.session_state.segment_selector.make_choice(1)
+                                if winner:
+                                    st.session_state.user_answers.append({"selected_segment": winner})
+                                    st.session_state.question_index += 1
+                                    st.session_state.quiz_data = get_question(st.session_state.question_index)
+                                st.rerun()
                     
                     if len(current_pair) > 1:
                         with col2:
                             segment2 = current_pair[1]
                             song2 = st.session_state.segment_selector.get_random_song(segment2)
                             spotify_player(song2["track_id"])
-                            
-                            if st.button("Select", key="select_2"):
-                                winner, round_number = st.session_state.segment_selector.make_choice(2)
-                                if winner:
-                                    st.session_state.user_answers.append({"selected_segment": winner})
-                                    st.session_state.question_index += 1
-                                    st.session_state.quiz_data = get_question(st.session_state.question_index)
-                                st.rerun()
+                            empty1, col_button, empty2= st.columns([1,1,1])
+
+                            with col_button:
+                                if st.button("Select", key="select_2"):
+                                    winner, round_number = st.session_state.segment_selector.make_choice(2)
+                                    if winner:
+                                        st.session_state.user_answers.append({"selected_segment": winner})
+                                        st.session_state.question_index += 1
+                                        st.session_state.quiz_data = get_question(st.session_state.question_index)
+                                    st.rerun()
                     
                     else:
                         winner, round_number = st.session_state.segment_selector.make_choice(1)
@@ -442,62 +450,15 @@ def run_quiz():
         ###
         st.markdown(answer_dict)
 
-        mental_input = {"age": answer_dict["age"],
-                        "streaming_service": answer_dict["streaming_service"], 
-                        "hours_per_day": answer_dict["hours_per_day"],
-                        "while_working": answer_dict["while_working"],
-                        "instrumentalist": answer_dict["instrumentalist"],
-                        "fav_genre": answer_dict["fav_genre"],
-                        "exploratory": answer_dict["exploratory"],
-                        "frequency_instrumental": answer_dict["frequency_instrumental"],
-                        "frequency_traditional": answer_dict["frequency_traditional"],
-                        "frequency_dance": answer_dict["frequency_dance"],
-                        "frequency_jazz": answer_dict["frequency_jazz"],
-                        "frequency_metal": answer_dict["frequency_metal"],
-                        "frequency_pop": answer_dict["frequency_pop"],
-                        "frequency_rnb": answer_dict["frequency_rnb"],
-                        "frequency_rap": answer_dict["frequency_rap"],
-                        "frequency_rock": answer_dict["frequency_rock"],
-                        "music_effects": answer_dict["music_effects"]}
-        
-        mental_input_df = pd.DataFrame(data=mental_input, index=[0])
+        ### BURAYA streamlit_add.py KODU EKLENECEK ###
 
-        def mental_feature_eng(df):
-            pass
-
-        mental_feature_eng(mental_input_df)
-
-        # anx_model.pkl
-        # dep_model.pkl
-        # ins_model.pkl
-        # obs_model.pkl
-        # tempo_model.pkl
-
-        ### SHOW MENTAL ###
-
-        spoti_input = {}
-
-        spoti_input_df = pd.DataFrame(data=spoti_input, index=[0])
-
-        def spoti_feature_eng(df):
-            pass
-
-        spoti_feature_eng(spoti_input_df)
-
-        # spoti_model.pkl
-
-        # recom_pool = df[df["cluster"] = spoti_model_predict and df["pc_segment"] = answer_dict.get("pc_segment") and df["genre"] = answer_dict.get("fav_genre")].iloc[:100]
-
-        # samples = recom_pool.sample(3)["track_id"]
-
-
-
-def tab2_content():
+    
+def analysis_content():
     st.title("Tab 2")
     st.write("This is the content for Tab 2. You can add your desired content here.")
 
 
-def tab3_content():
+def team_content():
     st.title("Tab 3")
     st.write("This is the content for Tab 3. You can add your desired content here.")
 
@@ -509,17 +470,34 @@ def tab3_content():
 st.set_page_config(layout="wide", page_title="Therapy Tunes", page_icon="🎶")
 load_css()
 df, segment_11, segment_12, segment_13, segment_21, segment_22, segment_23, segment_31, segment_32, segment_33 = load_data()
+col1, col2, col3 = st.columns([0.8,1,0.7])
+
+with col2:
+    st.markdown("""
+    <div style="display: flex; align-items: center;">
+        <img src="https://i.ibb.co/bQDZpKc/theraphytunes-logo.png" alt="Logo" style="height: 150px; margin-right: 10px;">
+        <h3 style="display: inline;">Mood Music Recommender</h3>
+    </div>
+    """, unsafe_allow_html=True)
+    
+st.divider()
+
+options = option_menu(None, ["Quiz", "Analysis", "Team"], 
+                      icons=["music-note-list", "bar-chart-steps", "people"], 
+                      menu_icon="cast", default_index=0, orientation="horizontal",
+                      styles={"container": {"padding": "0!important", 
+                                            "backgroundColor": "#E8E8E8",
+                                            "margin": "0!important",
+                                            "width": "100%",
+                                            "max-width": "100%"}})
 
 
-tab1, tab2, tab3 = st.tabs(["Quiz", "Tab 2", "Tab 3"])
-
-with tab1:
-    st.title("Music Habits Quiz")
+if options == "Quiz":
     initialize_session_state()
     run_quiz()
 
-with tab2:
-    tab2_content()
+elif options == "Analysis":
+    analysis_content()
 
-with tab3:
-    tab3_content()
+elif options == "Team":
+    team_content()
