@@ -475,10 +475,13 @@ def analysis_content():
     elif options_analysis == "Spotify":
         st.write("Spotify Analysis")
         col1, col2, col3 = st.columns([1, 1, 1])
+        
         with col3:
-            selected_genre = st.selectbox("Genre", ["Dance", "Instrumental", "Rap",
-                                                    "Rock", "Metal", "Pop",
-                                                    "Jazz", "Traditional", "R&B"])
+            st.markdown("Music Genre Features")
+            st.divider()
+            selected_genre = st.selectbox(label="question", label_visibility="hidden", options=["Dance", "Instrumental", "Rap",
+                                                                                                "Rock", "Metal", "Pop",
+                                                                                                "Jazz", "Traditional", "R&B"])
             polar_plot(df, selected_genre)
 
 
