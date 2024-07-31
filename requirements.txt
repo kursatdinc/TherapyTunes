@@ -86,6 +86,7 @@ soupsieve==2.5
 st-clickable-images==0.0.3
 stack-data
 streamlit==1.36.0
+streamlit-option-menu==0.3.13
 tenacity==8.5.0
 tensorboard
 tensorboard-data-server
