@@ -518,7 +518,7 @@ def analysis_content():
             st.error("""
                         • **Acousticness:** A confidence measure of whether the track is acoustic.
 
-                        • **Danceability:** Danceability describes how suitable a track is for dancing based on a combination of musical elements including tempo, rhythm stability, beat strength, and overall regularity.
+                        • **Danceability:** Danceability describes how suitable a track is for dancing based on a combination of musical elements.
 
                         • **Energy:** Energy is a measure represents a perceptual measure of intensity and activity.
 
