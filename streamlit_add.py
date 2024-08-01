@@ -1,23 +1,3 @@
-mental_input = {"age": answer_dict["age"],
-                        "streaming_service": answer_dict["streaming_service"], 
-                        "hours_per_day": answer_dict["hours_per_day"],
-                        "while_working": answer_dict["while_working"],
-                        "instrumentalist": answer_dict["instrumentalist"],
-                        "fav_genre": answer_dict["fav_genre"],
-                        "exploratory": answer_dict["exploratory"],
-                        "frequency_instrumental": answer_dict["frequency_instrumental"],
-                        "frequency_traditional": answer_dict["frequency_traditional"],
-                        "frequency_dance": answer_dict["frequency_dance"],
-                        "frequency_jazz": answer_dict["frequency_jazz"],
-                        "frequency_metal": answer_dict["frequency_metal"],
-                        "frequency_pop": answer_dict["frequency_pop"],
-                        "frequency_rnb": answer_dict["frequency_rnb"],
-                        "frequency_rap": answer_dict["frequency_rap"],
-                        "frequency_rock": answer_dict["frequency_rock"],
-                        "music_effects": answer_dict["music_effects"]}
-        
-        mental_input_df = pd.DataFrame(data=mental_input, index=[0])
-
         # def mental_feature_eng(df):
         #     return mental_inpuf_fe_df
 
@@ -33,7 +13,7 @@ mental_input = {"age": answer_dict["age"],
             predictions[condition] = model.predict_proba(mental_input_fe_df)[0][1]
 
         
-        st.header("Mental Health Predictions")
+        st.subheader("Mental Health Predictions")
         col1, col2, col3 = st.columns(3)
         
         with col1:

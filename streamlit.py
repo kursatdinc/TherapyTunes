@@ -6,7 +6,7 @@ import pandas as pd
 import random
 import joblib
 from horoscope_webscraping import get_star_ratings
-from features_polar_plot import polar_plot
+from analysis_graphs import polar_plot
 
 
 @st.cache_data
@@ -451,6 +451,26 @@ def run_quiz():
         ###
         st.markdown(answer_dict)
 
+        mental_input = {"age": answer_dict["age"],
+                        "streaming_service": answer_dict["streaming_service"], 
+                        "hours_per_day": answer_dict["hours_per_day"],
+                        "while_working": answer_dict["while_working"],
+                        "instrumentalist": answer_dict["instrumentalist"],
+                        "fav_genre": answer_dict["fav_genre"],
+                        "exploratory": answer_dict["exploratory"],
+                        "frequency_instrumental": answer_dict["frequency_instrumental"],
+                        "frequency_traditional": answer_dict["frequency_traditional"],
+                        "frequency_dance": answer_dict["frequency_dance"],
+                        "frequency_jazz": answer_dict["frequency_jazz"],
+                        "frequency_metal": answer_dict["frequency_metal"],
+                        "frequency_pop": answer_dict["frequency_pop"],
+                        "frequency_rnb": answer_dict["frequency_rnb"],
+                        "frequency_rap": answer_dict["frequency_rap"],
+                        "frequency_rock": answer_dict["frequency_rock"],
+                        "music_effects": answer_dict["music_effects"]}
+        
+        mental_input_df = pd.DataFrame(data=mental_input, index=[0])
+
         ### BURAYA streamlit_add.py KODU EKLENECEK ###
 
     
@@ -470,21 +490,46 @@ def analysis_content():
 
 
     if options_analysis == "Mental Survey":
-        st.write("Mental Survey Analysis")
+        col1, col2 = st.columns([1, 1])
+
+        with col1:
+            st.subheader("Col1 İçerik")
+            st.divider()
+        
+        with col2:
+            st.subheader("Col2 İçerik")
+            st.divider()
 
     elif options_analysis == "Spotify":
-        st.write("Spotify Analysis")
-        col1, col2, col3 = st.columns([1, 1, 1])
+        col1, col2 = st.columns([1, 1])
+
+        with col1:
+            st.subheader("Col1 İçerik")
+            st.divider()
         
-        with col3:
-            st.markdown("Music Genre Features")
+
+        with col2:
+            st.subheader("Music Genre Features")
             st.divider()
             selected_genre = st.selectbox(label="question", label_visibility="hidden", options=["Dance", "Instrumental", "Rap",
                                                                                                 "Rock", "Metal", "Pop",
                                                                                                 "Jazz", "Traditional", "R&B"])
             polar_plot(df, selected_genre)
+            st.error("""
+                        • **Acousticness:** A confidence measure of whether the track is acoustic.
 
+                        • **Danceability:** Danceability describes how suitable a track is for dancing based on a combination of musical elements including tempo, rhythm stability, beat strength, and overall regularity.
 
+                        • **Energy:** Energy is a measure represents a perceptual measure of intensity and activity.
+
+                        • **Instrumentalness:** Predicts whether a track contains no vocals.
+
+                        • **Liveness:** Detects the presence of an audience in the recording.
+
+                        • **Speechiness:** Speechiness detects the presence of spoken words in a track.
+
+                        • **Valence:** A measure to describing the musical positiveness conveyed by a track.
+                     """)
 def team_content():
     st.divider()
     

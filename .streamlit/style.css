@@ -24,3 +24,7 @@ button {
     color: #ffffff;
     background-color: #091747;
 }
+
+.small-font {
+    font-size:14px !important;
+}
