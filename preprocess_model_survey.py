@@ -164,31 +164,19 @@ preprocessed_data_X = preprocess_df(df_survey, preprocessing_pipeline)
 y = df_survey["tempo"]
 X = preprocessed_data_X
 
-catboost_params = {"border_count": 64,
-                   "depth": 3,
-                   "iterations": 300,
-                   "l2_leaf_reg": 5,
-                   "learning_rate": 0.01}
-
-catboost_model = CatBoostRegressor(**catboost_params, silent=True)
-
 xgboost_params = {"colsample_bytree": 0.8,
                   "learning_rate": 0.01,
                   "max_depth": 3,
                   "n_estimators": 100,
                   "subsample": 0.7}
 
-xgboost_model = XGBRegressor(**xgboost_params)
-
-# Ensemble Modelling
-ensemble_model = VotingRegressor(estimators=[("xgb", xgboost_model),
-                                             ("catboost", catboost_model)]).fit(X, y)
+xgboost_model = XGBRegressor(**xgboost_params).fit(X, y)
 
 random_user = X.sample(1)
 
-predicted_tempo = ensemble_model.predict(random_user)[0]
+predicted_tempo = xgboost_model.predict(random_user)[0]
 
-joblib.dump(ensemble_model, "./models/tempo_model.pkl")
+joblib.dump(xgboost_model, "./models/tempo_model.pkl")
 
 
 ###################### ANXIETY ######################

@@ -7,6 +7,7 @@ import random
 import joblib
 from horoscope_webscraping import get_star_ratings
 from analysis_graphs import polar_plot, artist_radar_plot
+from preprocess_model_survey import FeatureEngineer
 
 
 @st.cache_data
@@ -486,9 +487,7 @@ def run_quiz():
         musiceffect_feature = ["music_effects"]
 
         #####
-        import os
-        current_dir = os.path.dirname(os.path.abspath(__file__))
-        survey_preprocessor = joblib.load(os.path.join(current_dir, "models", "survey_preprocessing.pkl"))
+        survey_preprocessor = joblib.load("./models/survey_preprocessing.pkl")
         #####
 
         def preprocess_df(new_data, pipeline):
