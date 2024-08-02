@@ -2,11 +2,8 @@ import pandas as pd
 import joblib
 
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
-from sklearn.model_selection import train_test_split
-from sklearn.ensemble import VotingRegressor
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.svm import SVC
-from catboost import CatBoostRegressor
 from lightgbm import LGBMClassifier
 from xgboost import XGBRegressor
 
