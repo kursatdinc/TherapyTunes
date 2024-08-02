@@ -6,12 +6,13 @@ import pandas as pd
 import random
 import joblib
 from horoscope_webscraping import get_star_ratings
-from analysis_graphs import polar_plot
+from analysis_graphs import polar_plot, artist_radar_plot
 
 
 @st.cache_data
 def load_data():
     df = pd.read_csv("./datasets/spotify_final.csv")
+    df_survey = pd.read_csv("./datasets/mental_final.csv")
     segment_11 = pd.read_csv("./segment_datasets/segment_11.csv")
     segment_12 = pd.read_csv("./segment_datasets/segment_12.csv")
     segment_13 = pd.read_csv("./segment_datasets/segment_13.csv")
@@ -22,7 +23,7 @@ def load_data():
     segment_32 = pd.read_csv("./segment_datasets/segment_32.csv")
     segment_33 = pd.read_csv("./segment_datasets/segment_33.csv")
 
-    return df, segment_11, segment_12, segment_13, segment_21, segment_22, segment_23, segment_31, segment_32, segment_33
+    return df, df_survey, segment_11, segment_12, segment_13, segment_21, segment_22, segment_23, segment_31, segment_32, segment_33
 
 
 def load_css():
@@ -219,11 +220,10 @@ questions = [
         ]
     },
     {
-        "type": "image_3",
+        "type": "image_2",
         "question": "Is Listening to Music Good For Your Mental Health ?",
-        "choices": ["Improve", "No Effect", "Worsen"],
+        "choices": ["Improve", "No Effect"],
         "image_urls": ["https://i.ibb.co/sQqjgbt/019-thumb-up.png",
-                       "https://i.ibb.co/m5RLhMt/021-line.png",
                        "https://i.ibb.co/94gkgTD/020-thumb-down.png"]
     },
     {
@@ -449,7 +449,6 @@ def run_quiz():
         answer_dict["hustle"] = int(hustle_star)
         answer_dict["vibe"] = int(vibe_star)
         ###
-        st.markdown(answer_dict)
 
         mental_input = {"age": answer_dict["age"],
                         "streaming_service": answer_dict["streaming_service"], 
@@ -471,7 +470,75 @@ def run_quiz():
         
         mental_input_df = pd.DataFrame(data=mental_input, index=[0])
 
+        numeric_features = ["age", "listening_habit", "average_frequency", "genre_diversity", 
+                            "daily_listening_intensity", "rock_metal_affinity", "genre_diversity_ratio",
+                            "mainstream_music_score", "frequency_diversity_ratio", 
+                            "urban_frequency_interaction", "metal_music_exposure"]
+
+        binary_features = ["while_working", "instrumentalist", "exploratory"]
+
+        categorical_features = ["streaming_service", "fav_genre", "generation"]
+
+        frequency_features = ["frequency_instrumental", "frequency_traditional", "frequency_dance",
+                            "frequency_jazz", "frequency_metal", "frequency_pop", "frequency_rnb",
+                            "frequency_rap", "frequency_rock"]
+
+        musiceffect_feature = ["music_effects"]
+
+        #####
+        survey_preprocessor = joblib.load("./models/survey_preprocessing.pkl")
+        #####
+
+        def preprocess_df(new_data, pipeline):
+           
+            fe_data = pipeline.named_steps['feature_engineer'].transform(new_data)
+            
+            preprocessed_data = pipeline.named_steps['preprocessor'].transform(fe_data)
+            
+            feature_names = (binary_features + frequency_features + musiceffect_feature + numeric_features +
+                            pipeline.named_steps['preprocessor'].named_transformers_['cat'].get_feature_names_out(categorical_features).tolist())
+            
+            preprocessed_df = pd.DataFrame(preprocessed_data, columns=feature_names)
+            
+            return preprocessed_df
+
+
+        survey_preprocessor.fit(df_survey)
+
+        preprocessed_input = preprocess_df(mental_input_df, survey_preprocessor)
+
+        # st.dataframe(preprocessed_input)
+
+        tempo_model = joblib.load("./models/tempo_model.pkl")
+        anx_model = joblib.load("./models/anx_model.pkl")
+        dep_model = joblib.load("./models/dep_model.pkl")
+        ins_model = joblib.load("./models/ins_model.pkl")
+
+        predicted_tempo = tempo_model.predict(preprocessed_input)[0]
+        predicted_anxiety = anx_model.predict_proba(preprocessed_input)[0][1]
+        predicted_depression = dep_model.predict_proba(preprocessed_input)[0][1]
+        predicted_insomnia = ins_model.predict_proba(preprocessed_input)[0][1]
+
+        st.subheader("Mental Health Predictions")
+        st.divider()
+
+        col1, col2, col3 = st.columns(3)
+        
+        with col1:
+            st.markdown("**Anxiety**")
+            st.metric("", f"{predicted_anxiety:.2%}")
+        with col2:
+            st.markdown("**Depression**")
+            st.metric("", f"{predicted_depression:.2%}")
+        with col3:
+            st.markdown("**Insomnia**")
+            st.metric("", f"{predicted_insomnia:.2%}")
+
+
+
         ### BURAYA streamlit_add.py KODU EKLENECEK ###
+
+
 
     
 def analysis_content():
@@ -501,12 +568,14 @@ def analysis_content():
             st.divider()
 
     elif options_analysis == "Spotify":
-        col1, col2 = st.columns([1, 1])
+        col1, col2, col3 = st.columns([1, 1, 1])
 
         with col1:
-            st.subheader("Col1 İçerik")
+            st.subheader("Artist Features")
             st.divider()
-        
+            selected_artist = st.selectbox(label="question", label_visibility="hidden", options=df["artist_name"].unique().tolist())
+
+            artist_radar_plot(df, selected_artist)
 
         with col2:
             st.subheader("Music Genre Features")
@@ -515,6 +584,10 @@ def analysis_content():
                                                                                                 "Rock", "Metal", "Pop",
                                                                                                 "Jazz", "Traditional", "R&B"])
             polar_plot(df, selected_genre)
+        
+        with col3:
+            st.subheader("")
+            st.divider()
             st.error("""
                         • **Acousticness:** A confidence measure of whether the track is acoustic.
 
@@ -529,7 +602,9 @@ def analysis_content():
                         • **Speechiness:** Speechiness detects the presence of spoken words in a track.
 
                         • **Valence:** A measure to describing the musical positiveness conveyed by a track.
-                     """)
+                    """)
+            
+
 def team_content():
     st.divider()
     
@@ -612,7 +687,7 @@ def team_content():
 st.set_page_config(layout="wide", page_title="Therapy Tunes", page_icon="🎶")
 st.markdown('<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">', unsafe_allow_html=True)
 load_css()
-df, segment_11, segment_12, segment_13, segment_21, segment_22, segment_23, segment_31, segment_32, segment_33 = load_data()
+df, df_survey, segment_11, segment_12, segment_13, segment_21, segment_22, segment_23, segment_31, segment_32, segment_33 = load_data()
 col1, col2, col3 = st.columns([0.8,1,0.7])
 
 with col2:

@@ -1,10 +1,9 @@
 import pandas as pd
-from sklearn.linear_model import LinearRegression
+from sklearn.ensemble import RandomForestRegressor
 
 import warnings
 warnings.filterwarnings("ignore")
 
-# Adjusting Row Column Settings
 pd.set_option("display.max_columns", None)
 pd.set_option("display.float_format", lambda x: "%.3f" % x)
 
@@ -36,7 +35,7 @@ check_df(df_survey)
 ###########
 
 ## Drop unnecessary columns
-drop_list = ["Timestamp", "Foreign languages", "Composer", "Permissions"]
+drop_list = ["Timestamp", "Foreign languages", "Composer", "Permissions", "OCD"]
 
 df_survey.drop(drop_list, axis=1, inplace=True)
 
@@ -52,7 +51,7 @@ df_survey = df_survey.rename(columns={"Frequency [Classical]": "frequency_instru
                                       "Frequency [Metal]": "frequency_metal","Frequency [R&B]": "frequency_rnb", "Frequency [Rap]": "frequency_rap",
                                       "Frequency [Rock]": "frequency_rock", "Primary streaming service": "streaming_service", "Hours per day": "hours_per_day",
                                       "While working": "while_working", "Fav genre": "fav_genre", "Music effects": "music_effects", "Age": "age", "Instrumentalist": "instrumentalist",
-                                      "Exploratory": "exploratory", "BPM": "tempo", "Anxiety":"anxiety", "Depression":"depression", "Insomnia":"insomnia", "OCD": "obsession"})
+                                      "Exploratory": "exploratory", "BPM": "tempo", "Anxiety":"anxiety", "Depression":"depression", "Insomnia":"insomnia"})
 
 ## Rename Variables
 tra_genres = ["Country", "Folk", "Gospel"]
@@ -93,7 +92,8 @@ col_list = ["frequency_instrumental", "frequency_traditional", "frequency_dance"
 
 df_survey[col_list] = df_survey[col_list].replace({"Very frequently":"Often"})
 #############################################
-df_survey["music_effects"] = df_survey["music_effects"].replace({"No effect":"No Effect"})
+df_survey["music_effects"] = df_survey["music_effects"].replace({"No effect":"No Effect",
+                                                                 "Worsen":"No Effect"})
 #############################################
 replaced_streaming = {"Pandora":"Other",
                       "I do not use a streaming service.":"Other",
@@ -128,7 +128,7 @@ def impute_tempo(df):
         y_train = train_df_encoded["tempo"]
         X_test = test_df_encoded.drop(columns=["tempo"])
 
-        regressor = LinearRegression()
+        regressor = RandomForestRegressor(n_estimators=100, random_state=42)
         regressor.fit(X_train, y_train)
 
         predicted_tempo = regressor.predict(X_test)
@@ -205,14 +205,9 @@ df_survey["insomnia"] = df_survey["insomnia"].replace({3.5:3})
 df_survey["insomnia"] = pd.qcut(df_survey["insomnia"], q=2, labels=[0, 1])
 df_survey["insomnia"] = df_survey["insomnia"].astype(int) 
 
-df_survey["obsession"] = df_survey["obsession"].replace({8.5:9, 5.5:6}) 
-df_survey["obsession"] = pd.qcut(df_survey["obsession"], q=2, labels=[0, 1])
-df_survey["obsession"] = df_survey["obsession"].astype(int) 
-
 df_survey["age"] = df_survey["age"].astype(int)
 
 df_survey.info()
-
 
 ###########
 # EXPORT DATA

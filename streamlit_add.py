@@ -1,29 +1,3 @@
-        # def mental_feature_eng(df):
-        #     return mental_inpuf_fe_df
-
-        # mental_inpuf_fe_df = mental_feature_eng(mental_input_df)
-
-        models = {"Anxiety": joblib.load("./models/anx_model.pkl"),
-                  "Depression": joblib.load("./models/dep_model.pkl"),
-                  "Insomnia": joblib.load("./models/ins_model.pkl"),
-                  "Obsession": joblib.load("./models/obs_model.pkl")}   
-
-        predictions = {}
-        for condition, model in models.items():
-            predictions[condition] = model.predict_proba(mental_input_fe_df)[0][1]
-
-        
-        st.subheader("Mental Health Predictions")
-        col1, col2, col3 = st.columns(3)
-        
-        with col1:
-            st.metric("Anxiety", f"{predictions["Anxiety"]:.2%}")
-        with col2:
-            st.metric("Depression", f"{predictions["Depression"]:.2%}")
-        with col3:
-            st.metric("Insomnia", f"{predictions["Insomnia"]:.2%}")
-
-        
         spoti_input = {}
 
         spoti_input_df = pd.DataFrame(data=spoti_input, index=[0])

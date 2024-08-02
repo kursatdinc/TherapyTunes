@@ -110,6 +110,8 @@ final_df.head()
 
 final_df.to_csv("./datasets/spotify_clustered.csv", index=False)
 
+
+spoti_clustered = pd.read_csv("./datasets/spotify_clustered.csv")
 ###########
 # SEGMENT EXPORTS
 ###########
