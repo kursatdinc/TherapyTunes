@@ -154,15 +154,15 @@ questions = [
         "question": "What's Your Favorite Music Genre ?",
         "choices": ["Dance", "Instrumental", "Rap", "Rock",
                     "Metal", "Pop", "Jazz", "Traditional", "R&B"],
-        "image_urls": ["https://i.ibb.co/qmgbg2M/022-dance.png",
-                       "https://i.ibb.co/YhNddTN/23-instrumental.png",
-                       "https://i.ibb.co/WBGY2T0/24-rap.png",
-                       "https://i.ibb.co/K0Zzkhp/25-rock.png",
-                       "https://i.ibb.co/2gcSHn7/26-metal.png",
-                       "https://i.ibb.co/806CwDY/27-pop.png",
-                       "https://i.ibb.co/ypbW2vF/28-jazz.png",
-                       "https://i.ibb.co/R4QNXZg/29-traditional.png",
-                       "https://i.ibb.co/MGYKKgv/30-rnb.png"]
+        "image_urls": ["https://i.ibb.co/fGtR87Q/022-dance.png",
+                       "https://i.ibb.co/sPhbKQ3/023-instrumental.png",
+                       "https://i.ibb.co/8xCdL3L/024-rap.png",
+                       "https://i.ibb.co/zJsBPnP/025-rock.png",
+                       "https://i.ibb.co/0CMygtS/026-metal.png",
+                       "https://i.ibb.co/yyv77Vq/027-pop.png",
+                       "https://i.ibb.co/gjptTpp/028-jazz.png",
+                       "https://i.ibb.co/9NWHpw4/029-traditional.png",
+                       "https://i.ibb.co/qjN8CFt/030-rnb.png"]
     },
     {
         "type": "image_2",
@@ -232,18 +232,18 @@ questions = [
         "question": "What's Your Zodiac Sign ?",
         "choices": ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra",
                     "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"],
-        "image_urls": ["https://i.ibb.co/XV3GDzw/001-aries.png",
-                       "https://i.ibb.co/t4K7t9J/002-taurus.png",
-                       "https://i.ibb.co/VN8PpmM/003-gemini.png",
-                       "https://i.ibb.co/dDQhHJ2/004-cancer.png",
-                       "https://i.ibb.co/q14xXsn/005-leo.png",
-                       "https://i.ibb.co/zGLnSby/006-virgo.png",
-                       "https://i.ibb.co/kHYt5Fd/007-libra.png",
-                       "https://i.ibb.co/mBTmVrV/008-scorpio.png",
-                       "https://i.ibb.co/JKbxwhb/009-sagittarius.png",
-                       "https://i.ibb.co/2KRqsBn/010-capricorn.png",
-                       "https://i.ibb.co/YB6WYkt/011-aquarius.png",
-                       "https://i.ibb.co/YQjfWyy/012-pisces.png"]
+        "image_urls": ["https://i.ibb.co/TrymRW6/001-aries.png",
+                       "https://i.ibb.co/zSsd6Zj/002-taurus.png",
+                       "https://i.ibb.co/12Qb97k/003-gemini.png",
+                       "https://i.ibb.co/d5mX996/004-cancer.png",
+                       "https://i.ibb.co/D5qH4r7/005-leo.png",
+                       "https://i.ibb.co/x8mvjHr/006-virgo.png",
+                       "https://i.ibb.co/CWtDRgK/007-libra.png",
+                       "https://i.ibb.co/wBKHDp8/008-scorpio.png",
+                       "https://i.ibb.co/xXNjrsY/009-sagittarius.png",
+                       "https://i.ibb.co/mHmP91s/010-capricorn.png",
+                       "https://i.ibb.co/GpmWB6T/011-aquarius.png",
+                       "https://i.ibb.co/4fPW70k/012-pisces.png"]
     },
     {
         "type": "segment_selector",
@@ -350,15 +350,15 @@ def run_quiz():
                 quiz_data["image_urls"],
                 titles=[choice for choice in quiz_data["choices"]],
                 div_style={"display": "grid",
-                        "grid-template-columns": "repeat(3, 1fr)",
-                        "gap": "10px",
-                        "justify-content": "center",
-                        "background-color": "#E8E8E8",
-                        "padding": "20px"},
+                           "grid-template-columns": "repeat(3, 1fr)",
+                           "gap": "10px",
+                           "justify-content": "center",
+                           "background-color": "#E8E8E8",
+                           "padding": "20px"},
                 img_style={"width": "150px",
-                        "height": "150px",
-                        "object-fit": "cover",
-                        "margin": "auto"})
+                           "height": "150px",
+                           "object-fit": "cover",
+                           "margin": "auto"})
 
             if clicked > -1:
                 selected_answer = quiz_data["choices"][clicked]
@@ -524,16 +524,18 @@ def run_quiz():
         st.divider()
 
         col1, col2, col3 = st.columns(3)
-        
+
         with col1:
-            st.markdown("**Anxiety**")
-            st.metric("", f"{predicted_anxiety:.2%}")
+            st.markdown("<h3 style='text-align: center;'>Anxiety</h3>", unsafe_allow_html=True)
+            st.metric(label="anxiety", label_visibility="hidden", value=f"{predicted_anxiety:.2%}")
+
         with col2:
-            st.markdown("**Depression**")
-            st.metric("", f"{predicted_depression:.2%}")
+            st.markdown("<h3 style='text-align: center;'>Depression</h3>", unsafe_allow_html=True)
+            st.metric(label="depression", label_visibility="hidden", value=f"{predicted_depression:.2%}")
+
         with col3:
-            st.markdown("**Insomnia**")
-            st.metric("", f"{predicted_insomnia:.2%}")
+            st.markdown("<h3 style='text-align: center;'>Insomnia</h3>", unsafe_allow_html=True)
+            st.metric(label="insomnia", label_visibility="hidden", value=f"{predicted_insomnia:.2%}")
 
 
 
