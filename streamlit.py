@@ -486,17 +486,19 @@ def run_quiz():
         musiceffect_feature = ["music_effects"]
 
         #####
-        survey_preprocessor = joblib.load("./models/survey_preprocessing.pkl")
+        import os
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        survey_preprocessor = joblib.load(os.path.join(current_dir, "models", "survey_preprocessing.pkl"))
         #####
 
         def preprocess_df(new_data, pipeline):
            
-            fe_data = pipeline.named_steps['feature_engineer'].transform(new_data)
+            fe_data = pipeline.named_steps["feature_engineer"].transform(new_data)
             
-            preprocessed_data = pipeline.named_steps['preprocessor'].transform(fe_data)
+            preprocessed_data = pipeline.named_steps["preprocessor"].transform(fe_data)
             
             feature_names = (binary_features + frequency_features + musiceffect_feature + numeric_features +
-                            pipeline.named_steps['preprocessor'].named_transformers_['cat'].get_feature_names_out(categorical_features).tolist())
+                            pipeline.named_steps["preprocessor"].named_transformers_["cat"].get_feature_names_out(categorical_features).tolist())
             
             preprocessed_df = pd.DataFrame(preprocessed_data, columns=feature_names)
             
