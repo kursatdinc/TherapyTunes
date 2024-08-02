@@ -6,8 +6,9 @@ import pandas as pd
 import random
 import joblib
 from horoscope_webscraping import get_star_ratings
-from analysis_graphs import polar_plot, artist_radar_plot
-from preprocess_model_survey import FeatureEngineer
+from analysis_graphs import (polar_plot, artist_radar_plot, genres_by_years, genre_popularity, 
+                             top_songs, tempo_by_genre, d_stage, mental_health_by_music, genre_usage,
+                             age_genre_dist, genre_hour)
 
 
 @st.cache_data
@@ -560,37 +561,41 @@ def analysis_content():
 
 
     if options_analysis == "Mental Survey":
+        st.divider()
+
         col1, col2 = st.columns([1, 1])
 
         with col1:
-            st.subheader("Col1 İçerik")
-            st.divider()
+            genre_usage(df_survey)
         
         with col2:
-            st.subheader("Col2 İçerik")
-            st.divider()
+            age_genre_dist(df_survey)
+
+        st.divider()
+
+        mental_health_by_music(df_survey)
+
+        st.divider()
+
+        genre_hour(df_survey)
 
     elif options_analysis == "Spotify":
+        st.divider()
+
         col1, col2, col3 = st.columns([1, 1, 1])
 
         with col1:
-            st.subheader("Artist Features")
-            st.divider()
             selected_artist = st.selectbox(label="question", label_visibility="hidden", options=df["artist_name"].unique().tolist())
 
             artist_radar_plot(df, selected_artist)
 
         with col2:
-            st.subheader("Music Genre Features")
-            st.divider()
             selected_genre = st.selectbox(label="question", label_visibility="hidden", options=["Dance", "Instrumental", "Rap",
                                                                                                 "Rock", "Metal", "Pop",
                                                                                                 "Jazz", "Traditional", "R&B"])
             polar_plot(df, selected_genre)
         
         with col3:
-            st.subheader("")
-            st.divider()
             st.error("""
                         • **Acousticness:** A confidence measure of whether the track is acoustic.
 
@@ -606,7 +611,34 @@ def analysis_content():
 
                         • **Valence:** A measure to describing the musical positiveness conveyed by a track.
                     """)
-            
+        
+        st.divider()
+
+        col1, col2 = st.columns([1, 1])
+
+        with col1:
+            genres_by_years(df)
+
+        with col2:
+            d_stage(df)
+
+        st.divider()
+        
+        genre_popularity(df)
+
+        st.divider()
+
+        n = st.slider(label="top", label_visibility="hidden",  min_value=5, max_value=100, step=1)
+        top_songs(df,n)
+
+        st.divider()
+
+        tempo_by_genre(df)
+
+        
+
+
+
 
 def team_content():
     st.divider()

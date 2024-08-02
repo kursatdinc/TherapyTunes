@@ -147,16 +147,16 @@ joblib.dump(preprocessing_pipeline, "./models/survey_preprocessing.pkl")
 
 def preprocess_df(new_data, pipeline):
     # Feature Engineering adımı
-    fe_data = pipeline.named_steps['feature_engineer'].transform(new_data)
+    fe_data = pipeline.named_steps["feature_engineer"].transform(new_data)
     
     # Preprocessing adımı
-    preprocessed_data = pipeline.named_steps['preprocessor'].transform(fe_data)
+    preprocessed_data = pipeline.named_steps["preprocessor"].transform(fe_data)
     
     # Özellik isimlerini al
     feature_names = (binary_features + frequency_features + musiceffect_feature + numeric_features +
-                     pipeline.named_steps['preprocessor'].named_transformers_['cat'].get_feature_names_out(categorical_features).tolist())
+                     pipeline.named_steps["preprocessor"].named_transformers_["cat"].get_feature_names_out(categorical_features).tolist())
     
-    # Preprocessed veriyi DataFrame'e çevir
+    # Preprocessed veriyi DataFrame"e çevir
     preprocessed_df = pd.DataFrame(preprocessed_data, columns=feature_names)
     
     return preprocessed_df
