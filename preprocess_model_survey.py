@@ -1,10 +1,9 @@
 import pandas as pd
 import joblib
 
-from sklearn.preprocessing import StandardScaler, OneHotEncoder
-from sklearn.tree import DecisionTreeClassifier
+from sklearn.preprocessing import StandardScaler, OneHotEncoder, MinMaxScaler
+from sklearn.ensemble import AdaBoostClassifier, RandomForestClassifier
 from sklearn.svm import SVC
-from lightgbm import LGBMClassifier
 from xgboost import XGBRegressor
 
 from sklearn.base import BaseEstimator, TransformerMixin
@@ -34,80 +33,70 @@ class FeatureEngineer(BaseEstimator, TransformerMixin):
     def transform(self, X):
         X_ = X.copy()
 
-        # Feature 1: Generation
-        def get_generation(age):
+        # Feature 1
+        def get_age_group(age):
             if age >= 77:
-                return "Silent Generation"
+                return 5
             elif age >= 59:
-                return "Baby Boomer"
+                return 4
             elif age >= 43:
-                return "Generation X"
+                return 3
             elif age >= 27:
-                return "Millennial"
+                return 2
             elif age >= 11:
-                return "Generation Z"
+                return 1
             else:
-                return "Generation Alpha"
+                return 0
         
-        X_["generation"] = X_["age"].apply(get_generation)
+        X_["age_group"] = X_["age"].apply(get_age_group)
+        X_["age_group"] = X_["age_group"].astype(int)
 
-        # Feature 2: Listening Habit
-        X_["listening_habit"] = pd.cut(X_["hours_per_day"], 
-                                       bins=[0, 2, 4, 7, 24],
-                                       labels=[0, 1, 2, 3],
-                                       include_lowest=True)
-        X_["listening_habit"] = X_["listening_habit"].astype(int)
-
-        # Feature 3: Average Frequency
+        # Feature 2
         freq_cols = [col for col in X_.columns if "frequency" in col]
+
         ordinal_mapping = {"Never": 0, "Rarely": 1, "Sometimes": 2, "Often": 3}
+
         for col in freq_cols:
             X_[col] = X_[col].map(ordinal_mapping)
+
         X_["average_frequency"] = X_[freq_cols].mean(axis=1)
 
-        # Feature 4: Genre Diversity
+        # Feature 3
         def calculate_genre_diversity(row):
             non_zero_genres = sum(1 for value in row if value > 0)
             return non_zero_genres / len(freq_cols)
         X_["genre_diversity"] = X_[freq_cols].apply(calculate_genre_diversity, axis=1)
 
-        # Feature 5: Daily Listening Intensity
-        X_["daily_listening_intensity"] = (X_["hours_per_day"] * X_["listening_habit"]) / 100
+        # Feature 4
+        X_["normalized_hours"] = MinMaxScaler(feature_range=(0, 1)).fit_transform(X_[["hours_per_day"]])
+        X_["normalized_diversity"] = X_["genre_diversity"]
+        X_["normalized_frequency"] = X_["average_frequency"] / 3
 
-        # Feature 6: Rock Metal Affinity
-        X_["rock_metal_affinity"] = (X_["frequency_metal"] + X_["frequency_rock"]) / 2
+        X_["music_consumption_profile"] = (X_["normalized_hours"] * 0.3 +
+                                                  X_["normalized_diversity"] * 0.3 +
+                                                  X_["normalized_frequency"] * 0.4)
 
-        # Feature 7: Genre Diversity Ratio
-        X_["genre_diversity_ratio"] = X_.apply(lambda row: row["genre_diversity"] / row["average_frequency"] 
-                                               if row["average_frequency"] != 0 else 0, axis=1)
+        drop = ["normalized_hours", "normalized_diversity", "normalized_frequency"]
+        X_.drop(columns=drop, axis=1, inplace=True)
+
+        # Feature 5
+        X_["rock_metal_affinity"] = (X_["frequency_metal"] + X_["frequency_rock"] + 1) / 2
         
-        # Feature 8: Mainstream Music Score
+        # Feature 6
         X_["mainstream_music_score"] = X_["average_frequency"] * (1 - X_["genre_diversity"])
 
-        # Feature 9: Frequency Diversity Ratio
-        X_["frequency_diversity_ratio"] = X_.apply(lambda row: row["average_frequency"] / row["genre_diversity"]
-                                                   if row["genre_diversity"] != 0 else 0, axis=1)
-        
-        # Feature 10: Urban Frequency Interaction
-        X_["urban_frequency_interaction"] = ((X_["frequency_rnb"] + X_["frequency_rap"]) / 2) * X_["average_frequency"]
-
-        # Feature 11: Metal Music Exposure
-        X_["metal_music_exposure"] = X_["hours_per_day"] * X_["frequency_metal"]
-
         # Drop original columns that are no longer needed
-        X_ = X_.drop(columns=["hours_per_day"])
+        X_ = X_.drop(columns="average_frequency")
 
         return X_
 
 
-numeric_features = ["age", "listening_habit", "average_frequency", "genre_diversity", 
-                    "daily_listening_intensity", "rock_metal_affinity", "genre_diversity_ratio",
-                    "mainstream_music_score", "frequency_diversity_ratio", 
-                    "urban_frequency_interaction", "metal_music_exposure"]
+numeric_features = ["age", "age_group", "hours_per_day", "genre_diversity", "music_consumption_profile",
+                    "rock_metal_affinity", "mainstream_music_score"]
 
 binary_features = ["while_working", "instrumentalist", "exploratory"]
 
-categorical_features = ["streaming_service", "fav_genre", "generation"]
+categorical_features = ["streaming_service", "fav_genre"]
 
 frequency_features = ["frequency_instrumental", "frequency_traditional", "frequency_dance",
                       "frequency_jazz", "frequency_metal", "frequency_pop", "frequency_rnb",
@@ -140,12 +129,19 @@ def preprocess_df(new_data, pipeline):
     
     preprocessed_data = pipeline.named_steps["preprocessor"].transform(fe_data)
     
-    feature_names = (binary_features + frequency_features + musiceffect_feature + numeric_features +
-                     pipeline.named_steps["preprocessor"].named_transformers_["cat"].get_feature_names_out(categorical_features).tolist())
-    
+    feature_names = (
+        pipeline.named_steps["preprocessor"].named_transformers_["bin"].get_feature_names_out().tolist() +
+        pipeline.named_steps["preprocessor"].named_transformers_["freq"].get_feature_names_out().tolist() +
+        pipeline.named_steps["preprocessor"].named_transformers_["musiceffect"].get_feature_names_out().tolist() +
+        pipeline.named_steps["preprocessor"].named_transformers_["num"].get_feature_names_out().tolist() +
+        pipeline.named_steps["preprocessor"].named_transformers_["cat"].get_feature_names_out().tolist()
+    )
+
     preprocessed_df = pd.DataFrame(preprocessed_data, columns=feature_names)
     
     return preprocessed_df
+
+new_user = df_survey.sample(1)
 
 preprocessing_pipeline.fit(df_survey)
 
@@ -161,11 +157,11 @@ preprocessed_data_X = preprocess_df(df_survey, preprocessing_pipeline)
 y = df_survey["tempo"]
 X = preprocessed_data_X
 
-xgboost_params = {"colsample_bytree": 0.8,
-                  "learning_rate": 0.01,
-                  "max_depth": 3,
-                  "n_estimators": 100,
-                  "subsample": 0.7}
+xgboost_params = {"learning_rate":0.01,
+                  "max_depth":3,
+                  "n_estimators":100,
+                  "subsample":0.8,
+                  "random_state":42}
 
 xgboost_model = XGBRegressor(**xgboost_params).fit(X, y)
 
@@ -175,24 +171,30 @@ predicted_tempo = xgboost_model.predict(random_user)[0]
 
 joblib.dump(xgboost_model, "./models/tempo_model.pkl")
 
+#RMSE: 31.80
+
 
 ###################### ANXIETY ######################
 
 y = df_survey["anxiety"]
 X = preprocessed_data_X
 
-cart_params = {"criterion": "entropy",
-               "max_depth": 7,
-               "min_samples_leaf": 2,
-               "min_samples_split": 6}
+abc_params = {"learning_rate": 0.1,
+              "n_estimators": 100}
 
-cart_model = DecisionTreeClassifier(**cart_params, random_state=42).fit(X, y)
+abc_model = AdaBoostClassifier(**abc_params, random_state=42).fit(X, y)
 
 random_user = X.sample(1)
 
-predicted_anxiety = cart_model.predict_proba(random_user)[0][1]
+predicted_anxiety = abc_model.predict_proba(random_user)[0][1]
 
-joblib.dump(cart_model, "./models/anx_model.pkl")
+joblib.dump(abc_model, "./models/anx_model.pkl")
+
+#Accuracy: 0.57
+#F1 Score: 0.58
+#Recall: 0.61
+#Precision: 0.55
+#ROC AUC: 0.59
 
 
 ###################### DEPRESSION ######################
@@ -200,21 +202,25 @@ joblib.dump(cart_model, "./models/anx_model.pkl")
 y = df_survey["depression"]
 X = preprocessed_data_X
 
-lgbm_params = {"colsample_bytree": 1.0,
-               "learning_rate": 0.1,
-               "max_depth": 5,
-               "n_estimators": 100,
-               "num_leaves": 31,
-               "subsample": 0.8,
-               "verbose": -1}
+svc_params = {"C": 1,
+              "kernel": "rbf",
+              "degree": 3,
+              "coef0": 0.0}
 
-lgbm_model = LGBMClassifier(**lgbm_params, random_state=42).fit(X, y)
+
+svc_model = SVC(**svc_params, probability=True, random_state=42).fit(X, y)
 
 random_user = X.sample(1)
 
-predicted_depression = lgbm_model.predict_proba(random_user)[0][1]
+predicted_depression = svc_model.predict_proba(random_user)[0][1]
 
-joblib.dump(lgbm_model, "./models/dep_model.pkl")
+joblib.dump(svc_model, "./models/dep_model.pkl")
+
+#Accuracy: 0.61
+#F1 Score: 0.56
+#Recall: 0.53
+#Precision: 0.60
+#ROC AUC: 0.65
 
 
 ###################### INSOMNIA ######################
@@ -222,15 +228,20 @@ joblib.dump(lgbm_model, "./models/dep_model.pkl")
 y = df_survey["insomnia"]
 X = preprocessed_data_X
 
-svc_params = {"C": 1,
-              "kernel": "linear",  
-              "degree": 3,
-              "coef0": 0.0}
+rfc_params = {"criterion": "gini",
+              "max_depth": None,
+              "n_estimators": 100}
 
-svc_model = SVC(**svc_params, random_state=42, probability=True).fit(X, y)
+rfc_model = RandomForestClassifier(**rfc_params, random_state=42).fit(X, y)
 
 random_user = X.sample(1)
 
-predicted_insomnia = svc_model.predict_proba(random_user)[0][1]
+predicted_insomnia = rfc_model.predict_proba(random_user)[0][1]
 
-joblib.dump(svc_model, "./models/ins_model.pkl")
+joblib.dump(rfc_model, "./models/ins_model.pkl")
+
+#Accuracy: 0.58
+#F1 Score: 0.53
+#Recall: 0.50
+#Precision: 0.56
+#ROC AUC: 0.63

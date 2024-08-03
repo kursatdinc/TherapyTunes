@@ -9,6 +9,7 @@ from horoscope_webscraping import get_star_ratings
 from analysis_graphs import (polar_plot, artist_radar_plot, genres_by_years, genre_popularity, 
                              top_songs, tempo_by_genre, d_stage, mental_health_by_music, genre_usage,
                              age_genre_dist, genre_hour)
+from preprocess_model_survey import FeatureEngineer
 
 
 @st.cache_data
@@ -472,34 +473,24 @@ def run_quiz():
         
         mental_input_df = pd.DataFrame(data=mental_input, index=[0])
 
-        numeric_features = ["age", "listening_habit", "average_frequency", "genre_diversity", 
-                            "daily_listening_intensity", "rock_metal_affinity", "genre_diversity_ratio",
-                            "mainstream_music_score", "frequency_diversity_ratio", 
-                            "urban_frequency_interaction", "metal_music_exposure"]
-
-        binary_features = ["while_working", "instrumentalist", "exploratory"]
-
-        categorical_features = ["streaming_service", "fav_genre", "generation"]
-
-        frequency_features = ["frequency_instrumental", "frequency_traditional", "frequency_dance",
-                            "frequency_jazz", "frequency_metal", "frequency_pop", "frequency_rnb",
-                            "frequency_rap", "frequency_rock"]
-
-        musiceffect_feature = ["music_effects"]
-
         #####
         survey_preprocessor = joblib.load("./models/survey_preprocessing.pkl")
         #####
 
         def preprocess_df(new_data, pipeline):
-           
+
             fe_data = pipeline.named_steps["feature_engineer"].transform(new_data)
             
             preprocessed_data = pipeline.named_steps["preprocessor"].transform(fe_data)
             
-            feature_names = (binary_features + frequency_features + musiceffect_feature + numeric_features +
-                            pipeline.named_steps["preprocessor"].named_transformers_["cat"].get_feature_names_out(categorical_features).tolist())
-            
+            feature_names = (
+                pipeline.named_steps["preprocessor"].named_transformers_["bin"].get_feature_names_out().tolist() +
+                pipeline.named_steps["preprocessor"].named_transformers_["freq"].get_feature_names_out().tolist() +
+                pipeline.named_steps["preprocessor"].named_transformers_["musiceffect"].get_feature_names_out().tolist() +
+                pipeline.named_steps["preprocessor"].named_transformers_["num"].get_feature_names_out().tolist() +
+                pipeline.named_steps["preprocessor"].named_transformers_["cat"].get_feature_names_out().tolist()
+            )
+
             preprocessed_df = pd.DataFrame(preprocessed_data, columns=feature_names)
             
             return preprocessed_df
@@ -636,10 +627,6 @@ def analysis_content():
         tempo_by_genre(df)
 
         
-
-
-
-
 def team_content():
     st.divider()
     
