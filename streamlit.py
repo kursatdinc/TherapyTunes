@@ -153,6 +153,13 @@ questions = [
                        "https://i.ibb.co/6ZTNRC8/014-cancel.png"]
     },
     {
+        "type": "image_2",
+        "question": "Are You Open to Listening to New Music ?",
+        "choices": ["Yes", "No"],
+        "image_urls": ["https://i.ibb.co/nw72Gr3/013-check.png",
+                       "https://i.ibb.co/6ZTNRC8/014-cancel.png"]
+    },
+    {
         "type": "image_3",
         "question": "What's Your Favorite Music Genre ?",
         "choices": ["Dance", "Instrumental", "Rap", "Rock",
@@ -170,13 +177,6 @@ questions = [
     {
         "type": "image_2",
         "question": "Do You Play Any Musical Instrument ?",
-        "choices": ["Yes", "No"],
-        "image_urls": ["https://i.ibb.co/nw72Gr3/013-check.png",
-                       "https://i.ibb.co/6ZTNRC8/014-cancel.png"]
-    },
-    {
-        "type": "image_2",
-        "question": "Are You Open to Listening to New Music ?",
         "choices": ["Yes", "No"],
         "image_urls": ["https://i.ibb.co/nw72Gr3/013-check.png",
                        "https://i.ibb.co/6ZTNRC8/014-cancel.png"]
@@ -750,9 +750,15 @@ def team_content():
 
     with col1:
         st.markdown('<p class="centered-subheader">Büşra Sürücü</p>', unsafe_allow_html=True)
-        st.write("Veri Bilimci")
-        st.write("Python ve veri analizi konularında uzman.")
-        st.divider()
+
+        st.markdown("""
+            <div class="center-image-container">
+                <img class="center-image" src="https://i.ibb.co/ZXv4W9n/Ekran-Resmi-2024-08-03-23-52-41.png">
+            </div>
+        """, unsafe_allow_html=True)
+
+        st.markdown('<p class="centered-paragraph">Analytics Virtuoso</p>', unsafe_allow_html=True)
+
         st.markdown("""
         <div class="social-icons">
             <a href="https://linkedin.com/in/busrasurucu" target="_blank" title="LinkedIn">
@@ -766,9 +772,15 @@ def team_content():
 
     with col2:
         st.markdown('<p class="centered-subheader">Hilal Alpak</p>', unsafe_allow_html=True)
-        st.write("Veri Bilimci")
-        st.write("Python ve veri analizi konularında uzman.")
-        st.divider()
+
+        st.markdown("""
+            <div class="center-image-container">
+                <img class="center-image" src="https://i.ibb.co/Q90m5wN/Ekran-Resmi-2024-08-03-23-55-01.png">
+            </div>
+        """, unsafe_allow_html=True)
+
+        st.markdown('<p class="centered-paragraph">Data Alchemist</p>', unsafe_allow_html=True)
+
         st.markdown("""
         <div class="social-icons">
             <a href="https://linkedin.com/in/hilal-alpak" target="_blank" title="LinkedIn">
@@ -782,9 +794,15 @@ def team_content():
 
     with col3:
         st.markdown('<p class="centered-subheader">Kürşat Dinç</p>', unsafe_allow_html=True)
-        st.write("Veri Bilimci")
-        st.write("Python ve veri analizi konularında uzman.")
-        st.divider()
+
+        st.markdown("""
+            <div class="center-image-container">
+                <img class="center-image" src="https://i.ibb.co/v36L0PS/Ekran-Resmi-2024-08-03-23-55-09.png">
+            </div>
+        """, unsafe_allow_html=True)
+
+        st.markdown('<p class="centered-paragraph">Data Orchestrator</p>', unsafe_allow_html=True)
+
         st.markdown("""
         <div class="social-icons">
             <a href="https://linkedin.com/in/kursatdinc" target="_blank" title="LinkedIn">

@@ -90,10 +90,10 @@ performance = evaluate_lgbm_model(df_spoti_model, "cluster")
 for metric, value in performance.items():
     print(f"{metric}: {value:.4f}")
 
-# Accuracy: 0.4454
-# F1 Score: 0.3367
-# Precision: 0.3959
-# Recall: 0.4454
+# Accuracy: 0.7672
+# F1 Score: 0.7549
+# Precision: 0.7570
+# Recall: 0.7672
 
 
 
