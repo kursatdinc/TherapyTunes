@@ -14,8 +14,9 @@ from preprocess_model_survey import FeatureEngineer
 
 @st.cache_data
 def load_data():
-    df = pd.read_csv("./datasets/spotify_final.csv")
+    df_clustered = pd.read_csv("./datasets/spotify_clustered.csv")
     df_survey = pd.read_csv("./datasets/mental_final.csv")
+    df_spoti = pd.read_csv("./datasets/spotify_model.csv")
     segment_11 = pd.read_csv("./segment_datasets/segment_11.csv")
     segment_12 = pd.read_csv("./segment_datasets/segment_12.csv")
     segment_13 = pd.read_csv("./segment_datasets/segment_13.csv")
@@ -26,7 +27,7 @@ def load_data():
     segment_32 = pd.read_csv("./segment_datasets/segment_32.csv")
     segment_33 = pd.read_csv("./segment_datasets/segment_33.csv")
 
-    return df, df_survey, segment_11, segment_12, segment_13, segment_21, segment_22, segment_23, segment_31, segment_32, segment_33
+    return df_clustered, df_survey, df_spoti, segment_11, segment_12, segment_13, segment_21, segment_22, segment_23, segment_31, segment_32, segment_33
 
 
 def load_css():
@@ -377,13 +378,13 @@ def run_quiz():
                 current_pair = st.session_state.segment_selector.get_next_pair()
                 
                 if current_pair:
-                    emptycol1, col1, col2, emptycol2= st.columns([1.1,1,1,1])
+                    emptycol1, col1, col2, emptycol2= st.columns([1.2,1,1,1])
                     
                     with col1:
                         segment1 = current_pair[0]
                         song1 = st.session_state.segment_selector.get_random_song(segment1)
                         spotify_player(song1["track_id"])
-                        empty1, col_button, empty2= st.columns([1,1,1])
+                        empty1, col_button, empty2= st.columns([0.8,1,1])
 
                         with col_button:
                             if st.button("Select", key="select_1"):
@@ -399,7 +400,7 @@ def run_quiz():
                             segment2 = current_pair[1]
                             song2 = st.session_state.segment_selector.get_random_song(segment2)
                             spotify_player(song2["track_id"])
-                            empty1, col_button, empty2= st.columns([1,1,1])
+                            empty1, col_button, empty2= st.columns([0.8,1,1])
 
                             with col_button:
                                 if st.button("Select", key="select_2"):
@@ -477,7 +478,7 @@ def run_quiz():
         survey_preprocessor = joblib.load("./models/survey_preprocessing.pkl")
         #####
 
-        def preprocess_df(new_data, pipeline):
+        def preprocess_df_survey(new_data, pipeline):
 
             fe_data = pipeline.named_steps["feature_engineer"].transform(new_data)
             
@@ -498,7 +499,7 @@ def run_quiz():
 
         survey_preprocessor.fit(df_survey)
 
-        preprocessed_input = preprocess_df(mental_input_df, survey_preprocessor)
+        preprocessed_input = preprocess_df_survey(mental_input_df, survey_preprocessor)
 
         # st.dataframe(preprocessed_input)
 
@@ -530,10 +531,102 @@ def run_quiz():
             st.metric(label="insomnia", label_visibility="hidden", value=f"{predicted_insomnia:.2%}")
 
 
+        spoti_input = {"anxiety_index": predicted_anxiety,
+                       "depression_index": predicted_depression,
+                       "insomnia_index": predicted_insomnia,
+                       "tempo": predicted_tempo,
+                       "valence": answer_dict["vibe"],
+                       "energy": answer_dict["hustle"]}
 
-        ### BURAYA streamlit_add.py KODU EKLENECEK ###
+        spoti_input_df = pd.DataFrame(data=spoti_input, index=[0])
+ 
+        #####
+        spoti_preprocessor = joblib.load("./models/spotify_preprocessing.pkl")
+        #####
+
+        def preprocess_df_spoti(new_data, pipeline):
+    
+            preprocessed_data = pipeline.named_steps["preprocessor"].transform(new_data)
+            
+            feature_names = (
+                pipeline.named_steps["preprocessor"].named_transformers_["pass_cols"].get_feature_names_out().tolist() +
+                pipeline.named_steps["preprocessor"].named_transformers_["sc_cols"].get_feature_names_out().tolist()
+            )
+
+            preprocessed_df = pd.DataFrame(preprocessed_data, columns=feature_names)
+            
+            return preprocessed_df
 
 
+        spoti_preprocessor.fit(df_spoti)
+
+        preprocessed_input_spoti = preprocess_df_spoti(spoti_input_df, spoti_preprocessor)
+
+        # st.dataframe(preprocessed_input_spoti)
+
+        spoti_model = joblib.load("./models/spotify_model.pkl")    
+
+        predicted_cluster = spoti_model.predict(preprocessed_input_spoti)[0]
+
+        # st.write(predicted_cluster)
+
+        def get_recommendations(n=3, df=df_clustered, spoti_model_predict=predicted_cluster, answer_dict=answer_dict):
+            recom_pool = df[
+                (df["cluster"] == spoti_model_predict) & 
+                (df["pc_segment"] == answer_dict.get("pc_segment"))
+                ].iloc[:100]
+            
+            return recom_pool.sample(n)["track_id"].tolist()
+        
+        st.divider()
+        
+        col1_empty, col2, col3_empty = st.columns([1.15,1,1])
+
+        with col2:
+            if st.button("Would You Like Us to Recommend a Song?"):
+                st.session_state.show_recommendation = True
+                st.session_state.recommendations = get_recommendations(n=3, df=df_clustered, spoti_model_predict=predicted_cluster, answer_dict=answer_dict)
+
+        if st.session_state.get("show_recommendation", False):
+            dummy1, col2, dummy2 = st.columns([0.55,1,0.5])
+            
+            with col2:
+                st.divider()
+                st.subheader("Here's Your Personalized Song Recommendations")
+                st.divider()
+
+            col1, col2, col3 = st.columns([1,1,0.6])
+            columns = [col1, col2, col3]
+
+            for i, track_id in enumerate(st.session_state.recommendations):
+                with columns[i]:
+                    spotify_player(track_id)
+
+            dummy1, col1, dummy2, col2, dummy3 = st.columns([1,1,1,1,1])
+
+            with col1:
+                if st.button("Get New Recommendations"):
+                    st.session_state.recommendations = get_recommendations(n=3, df=df_clustered, spoti_model_predict=predicted_cluster, answer_dict=answer_dict)
+                    st.rerun()
+            
+            with col2:
+                if st.button("Start Quiz Again"):
+                    st.session_state.question_index = 0
+                    st.session_state.quiz_data = get_question(st.session_state.question_index)
+                    st.session_state.user_answers = []
+                    st.session_state.show_recommendation = False
+                    st.session_state.recommendations = []
+                    dataset = [{"segment": 11, "track_id": segment_11.sample(1)["track_id"].values[0]},
+                               {"segment": 12, "track_id": segment_12.sample(1)["track_id"].values[0]},
+                               {"segment": 13, "track_id": segment_13.sample(1)["track_id"].values[0]},
+                               {"segment": 21, "track_id": segment_21.sample(1)["track_id"].values[0]},
+                               {"segment": 22, "track_id": segment_22.sample(1)["track_id"].values[0]},
+                               {"segment": 23, "track_id": segment_23.sample(1)["track_id"].values[0]},
+                               {"segment": 31, "track_id": segment_31.sample(1)["track_id"].values[0]},
+                               {"segment": 32, "track_id": segment_32.sample(1)["track_id"].values[0]},
+                               {"segment": 33, "track_id": segment_33.sample(1)["track_id"].values[0]}]
+                    st.session_state.segment_selector = SegmentSelector(dataset)
+                    st.rerun()
 
     
 def analysis_content():
@@ -576,15 +669,15 @@ def analysis_content():
         col1, col2, col3 = st.columns([1, 1, 1])
 
         with col1:
-            selected_artist = st.selectbox(label="question", label_visibility="hidden", options=df["artist_name"].unique().tolist())
+            selected_artist = st.selectbox(label="question", label_visibility="hidden", options=df_clustered["artist_name"].unique().tolist())
 
-            artist_radar_plot(df, selected_artist)
+            artist_radar_plot(df_clustered, selected_artist)
 
         with col2:
             selected_genre = st.selectbox(label="question", label_visibility="hidden", options=["Dance", "Instrumental", "Rap",
                                                                                                 "Rock", "Metal", "Pop",
                                                                                                 "Jazz", "Traditional", "R&B"])
-            polar_plot(df, selected_genre)
+            polar_plot(df_clustered, selected_genre)
         
         with col3:
             st.error("""
@@ -608,23 +701,23 @@ def analysis_content():
         col1, col2 = st.columns([1, 1])
 
         with col1:
-            genres_by_years(df)
+            genres_by_years(df_clustered)
 
         with col2:
-            d_stage(df)
+            d_stage(df_clustered)
 
         st.divider()
         
-        genre_popularity(df)
+        genre_popularity(df_clustered)
 
         st.divider()
 
         n = st.slider(label="top", label_visibility="hidden",  min_value=5, max_value=100, step=1)
-        top_songs(df,n)
+        top_songs(df_clustered,n)
 
         st.divider()
 
-        tempo_by_genre(df)
+        tempo_by_genre(df_clustered)
 
         
 def team_content():
@@ -709,7 +802,7 @@ def team_content():
 st.set_page_config(layout="wide", page_title="Therapy Tunes", page_icon="🎶")
 st.markdown('<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">', unsafe_allow_html=True)
 load_css()
-df, df_survey, segment_11, segment_12, segment_13, segment_21, segment_22, segment_23, segment_31, segment_32, segment_33 = load_data()
+df_clustered, df_survey, df_spoti, segment_11, segment_12, segment_13, segment_21, segment_22, segment_23, segment_31, segment_32, segment_33 = load_data()
 col1, col2, col3 = st.columns([0.8,1,0.7])
 
 with col2:

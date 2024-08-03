@@ -1,6 +1,8 @@
 import pandas as pd
 import numpy as np
 
+from sklearn.ensemble import RandomForestClassifier
+
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
 from sklearn.decomposition import PCA
 from sklearn.cluster import KMeans
@@ -47,8 +49,8 @@ def grab_col_names(dataframe, cat_th=10, car_th=20):
 
 cat_cols, num_cols, cat_but_car = grab_col_names(df_spoti)
 
-num_cols = [col for col in num_cols if col not in ["popularity", "year"]]
-num_cols.append("mode")
+num_cols = [col for col in num_cols if col not in ["popularity", "key", "speechiness", "liveness" "year"]]
+# num_cols.append("mode")
 num_cols.append("time_signature")
 
 model_df = df_spoti[num_cols]
@@ -61,8 +63,9 @@ elbow = KElbowVisualizer(kmeans, k=(2, 30))
 
 elbow.fit(model_df)
 elbow.show()
+elbow.elbow_value_ # 5
 
-kmeans = KMeans(n_clusters=elbow.elbow_value_,n_init=50).fit(model_df)
+kmeans = KMeans(n_clusters=5,n_init=50).fit(model_df)
 
 clusters_kmeans = kmeans.labels_
 
@@ -71,16 +74,42 @@ clustered_spoti_df["cluster"] = clusters_kmeans
 
 clustered_spoti_df.head()
 
+
+###########
+# PCA FEATURE SELECTION
+###########
+
+y = clustered_spoti_df["cluster"]
+X = clustered_spoti_df.drop(["artist_name", "genre", "track_name", "track_id", "year", "cluster"], axis=1)
+
+model = RandomForestClassifier(n_estimators=100, random_state=42)
+model.fit(X, y)
+
+importances = model.feature_importances_
+feature_names = X.columns
+feature_importances = pd.DataFrame({"Feature": feature_names, "Importance": importances})
+feature_importances = feature_importances.sort_values(by="Importance", ascending=False)
+
+print("Feature Importance:")
+print(feature_importances)
+
+# mode, energy, instrumentalness, acousticness, loudness
+
 ###########
 # RULE BASED CLUSTERING
 ###########
 
-pca_cols = ['speechiness',
-            'acousticness',
-            'instrumentalness',
-            'liveness',
-            'valence',
-            'tempo']
+# pca_cols = ["mode",
+#             "energy",
+#             "instrumentalness",
+#             "acousticness",
+#             "loudness"]
+
+pca_cols = ["mode",
+            "key",
+            "speechiness",
+            "liveness",
+            "popularity"]
 
 pca_df = df_spoti[pca_cols]
 
@@ -110,8 +139,6 @@ final_df.head()
 
 final_df.to_csv("./datasets/spotify_clustered.csv", index=False)
 
-
-spoti_clustered = pd.read_csv("./datasets/spotify_clustered.csv")
 ###########
 # SEGMENT EXPORTS
 ###########

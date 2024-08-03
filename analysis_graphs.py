@@ -183,7 +183,7 @@ def tempo_by_genre(df):
 
 
 def d_stage(df):
-    data = df.groupby(["year", "genre"]).size().reset_index(name='count')
+    data = df.groupby(["year", "genre"]).size().reset_index(name="count")
     
     feature_data = data.pivot(index="year", columns="genre", values="count")
 
