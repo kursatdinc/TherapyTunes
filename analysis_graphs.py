@@ -119,6 +119,10 @@ def genres_by_years(df):
 def genre_popularity(df):
     genre_popularity = df.groupby("genre")["popularity"].mean().reset_index()
 
+    y_min = 15
+    y_max = 40
+
+
     fig = px.bar(
         genre_popularity,
         x="genre",
@@ -130,6 +134,7 @@ def genre_popularity(df):
     )
 
     fig.update_layout(
+        yaxis=dict(range=[y_min, y_max]),
         plot_bgcolor="#E8E8E8",
         paper_bgcolor="#E8E8E8",
         showlegend = False
@@ -140,6 +145,9 @@ def genre_popularity(df):
 
 def top_songs(df,n):
     top_songs = df.nlargest(n, "popularity")
+
+    y_min = 70
+    y_max = 100
 
     fig = px.bar(
         top_songs,
@@ -153,6 +161,7 @@ def top_songs(df,n):
 
     fig.update_layout(xaxis_title="Song Name",
                       yaxis_title="Popularity",
+                      yaxis=dict(range=[y_min, y_max]),
                       plot_bgcolor="#E8E8E8",
                       paper_bgcolor="#E8E8E8",
                       showlegend = False
@@ -162,22 +171,28 @@ def top_songs(df,n):
 
 
 def tempo_by_genre(df):
-    df["avg_tempo"] = df.groupby("genre")["tempo"].transform("mean")
+    genre_avg_tempo = df.groupby("genre")["tempo"].mean().reset_index()
 
-    fig = px.box(
-        df,
+    y_min = 100
+    y_max = 130
+
+    fig = px.bar(
+        genre_avg_tempo,
         x="genre",
-        y="avg_tempo",
+        y="tempo",
         title="Average Tempo by Music Genre",
-        labels={"genre": "Music Genre", "avg_tempo": "Average Tempo"},
+        labels={"genre": "Music Genre", "tempo": "Average Tempo"},
         color="genre"
     )
 
-    fig.update_layout(xaxis_title="Music Genre",
-                      yaxis_title="Average Tempo",
-                      plot_bgcolor="#E8E8E8",
-                      paper_bgcolor="#E8E8E8",
-                      showlegend = False)
+    fig.update_layout(
+        xaxis_title="Music Genre",
+        yaxis_title="Average Tempo",
+        yaxis=dict(range=[y_min, y_max]),
+        plot_bgcolor="#E8E8E8",
+        paper_bgcolor="#E8E8E8",
+        showlegend=False
+    )
     
     st.plotly_chart(fig)
 
