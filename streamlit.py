@@ -753,7 +753,7 @@ def team_content():
 
         st.markdown("""
             <div class="center-image-container">
-                <img class="center-image" src="https://i.ibb.co/ZXv4W9n/Ekran-Resmi-2024-08-03-23-52-41.png">
+                <img class="center-image" src="https://i.ibb.co/CtmX6cm/busra.png">
             </div>
         """, unsafe_allow_html=True)
 
@@ -775,11 +775,11 @@ def team_content():
 
         st.markdown("""
             <div class="center-image-container">
-                <img class="center-image" src="https://i.ibb.co/Q90m5wN/Ekran-Resmi-2024-08-03-23-55-01.png">
+                <img class="center-image" src="https://i.ibb.co/6vTXVsv/hilal.png">
             </div>
         """, unsafe_allow_html=True)
 
-        st.markdown('<p class="centered-paragraph">Data Alchemist</p>', unsafe_allow_html=True)
+        st.markdown('<p class="centered-paragraph">Data Composer</p>', unsafe_allow_html=True)
 
         st.markdown("""
         <div class="social-icons">
@@ -797,7 +797,7 @@ def team_content():
 
         st.markdown("""
             <div class="center-image-container">
-                <img class="center-image" src="https://i.ibb.co/v36L0PS/Ekran-Resmi-2024-08-03-23-55-09.png">
+                <img class="center-image" src="https://i.ibb.co/g9sTYyp/kursat.png">
             </div>
         """, unsafe_allow_html=True)
 
