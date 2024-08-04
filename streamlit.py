@@ -153,13 +153,6 @@ questions = [
                        "https://i.ibb.co/6ZTNRC8/014-cancel.png"]
     },
     {
-        "type": "image_2",
-        "question": "Are You Open to Listening to New Music ?",
-        "choices": ["Yes", "No"],
-        "image_urls": ["https://i.ibb.co/nw72Gr3/013-check.png",
-                       "https://i.ibb.co/6ZTNRC8/014-cancel.png"]
-    },
-    {
         "type": "image_3",
         "question": "What's Your Favorite Music Genre ?",
         "choices": ["Dance", "Instrumental", "Rap", "Rock",
@@ -222,6 +215,13 @@ questions = [
                 "options": ["Never", "Rarely", "Sometimes", "Often"]
             }
         ]
+    },
+    {
+        "type": "image_2",
+        "question": "Are You Open to Listening to New Music ?",
+        "choices": ["Yes", "No"],
+        "image_urls": ["https://i.ibb.co/nw72Gr3/013-check.png",
+                       "https://i.ibb.co/6ZTNRC8/014-cancel.png"]
     },
     {
         "type": "image_2",
@@ -604,11 +604,6 @@ def run_quiz():
 
             dummy1, col1, dummy2, col2, dummy3 = st.columns([1,1,1,1,1])
 
-            with col1:
-                if st.button("Get New Recommendations"):
-                    st.session_state.recommendations = get_recommendations(n=3, df=df_clustered, spoti_model_predict=predicted_cluster, answer_dict=answer_dict)
-                    st.rerun()
-            
             with col2:
                 if st.button("Start Quiz Again"):
                     st.session_state.question_index = 0
@@ -627,6 +622,13 @@ def run_quiz():
                                {"segment": 33, "track_id": segment_33.sample(1)["track_id"].values[0]}]
                     st.session_state.segment_selector = SegmentSelector(dataset)
                     st.rerun()
+
+            with col1:
+                if st.button("Get New Recommendations"):
+                    st.session_state.recommendations = get_recommendations(n=3, df=df_clustered, spoti_model_predict=predicted_cluster, answer_dict=answer_dict)
+                    st.rerun()
+            
+            
 
     
 def analysis_content():
