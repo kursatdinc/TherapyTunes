@@ -73,7 +73,7 @@ def artist_radar_plot(df, artist_name):
                                    paper_bgcolor = "#E8E8E8",
                                    title=f"Polar Plot of {artist_name}'s Features")
 
-    fig.update_polars(angularaxis = dict(ticktext = [f"<b>{label}</b>" for label in labels],
+    fig.update_polars(angularaxis = dict(ticktext = [f"<b>{label.capitalize()}</b>" for label in labels],
                                          tickvals = angles[:-1],
                                          tickfont = dict(size=12)))
 
