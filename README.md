@@ -5,7 +5,17 @@ Therapy Tunes is an innovative project exploring the intersection of music and m
 
 ## Project Objective
 
-Our primary aim is to recommend songs that align with users' musical preferences while addressing their mental states. Therapy Tunes harnesses music's therapeutic potential to aid in managing common issues such as anxiety, depression, and insomnia.
+TherapyTunes approaches recommendation systems from a new perspective, follows a different and more personal path than the systems used so far, and uses the healing power of music when making suggestions to users.
+
+As it is known, people have a hard time evaluating their mental health objectively and are unable to do daily activities that will be good for them. One of the most important of these is listening to music that will be good for our soul.
+
+This is exactly where we step in and detect the emotional states of the users according to their music listening habits and create our first stage recommendation pool based on the emotional states we detect.
+
+Then, in order to capture daily emotional changes, we also process daily horoscope comments and narrow down our suggestion pool one step further.
+
+Finally, in order to get an objective result, we apply users to a mini song selection test to determine their music preferences and apply the final narrowing process to our recommendation pool. In this way, we have access to the most optimum recommendation pool possible and we make suggestions to users from this pool.
+
+In short, TherapyTunes stands out as the most personalized and accurate recommendation system among the recommendation systems developed so far.
 
 ## Operational Methodology
 
